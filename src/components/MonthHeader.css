@@ -1,24 +1,27 @@
 /*
  * MonthHeader.css
- * Fun, colorful header that changes with the season.
- * Designed for SM-T350 landscape (1024x768).
+ * Base styles + per-theme overrides.
+ * Classic + Playful use JS-injected gradient backgrounds from MONTH_THEMES.
+ * Sleek + Muted override completely via .theme-sleek / .theme-muted classes.
  */
 
+/* ─── Base ─── */
 .month-header {
   padding: 8px 12px 6px;
   flex-shrink: 0;
-  border-bottom: 3px solid rgba(0, 0, 0, 0.08);
+  border-bottom: var(--header-border, 3px solid rgba(0,0,0,0.08));
   position: relative;
   overflow: hidden;
+  transition: background 0.4s ease;
 }
 
-/* Subtle decorative pattern overlay */
 .month-header::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%),
-              radial-gradient(circle at 80% 30%, rgba(255,255,255,0.2) 0%, transparent 40%);
+  background:
+    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.25) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.15) 0%, transparent 40%);
   pointer-events: none;
 }
 
@@ -37,21 +40,19 @@
   border-radius: 50%;
   width: 36px;
   height: 36px;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  color: #5A3E1B;
+  transition: all 0.15s;
+  color: inherit;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
 }
 
-.nav-btn:active {
-  transform: scale(0.92);
-  background: rgba(255, 255, 255, 0.9);
-}
+.nav-btn:active { transform: scale(0.88); }
 
 .month-title-block {
   display: flex;
@@ -64,15 +65,14 @@
   line-height: 1;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
   animation: float 3s ease-in-out infinite;
+  display: block;
 }
 
-.deco-right {
-  animation-delay: 1.5s;
-}
+.deco-right { animation-delay: 1.5s; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  50%       { transform: translateY(-3px); }
 }
 
 .month-title-text {
@@ -82,13 +82,13 @@
 }
 
 .month-name {
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
   font-size: 28px;
   font-weight: 900;
   letter-spacing: 2px;
   margin: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   line-height: 1;
+  font-family: inherit;
 }
 
 .month-year {
@@ -109,7 +109,7 @@
 
 .today-btn {
   background: rgba(255, 255, 255, 0.7);
-  border: 2px solid;
+  border: 2px solid currentColor;
   border-radius: 16px;
   padding: 2px 16px;
   font-size: 11px;
@@ -117,21 +117,176 @@
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: all 0.2s;
+  transition: all 0.15s;
   -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
 }
 
-.today-btn:active {
-  transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.95);
-}
+.today-btn:active { transform: scale(0.93); }
 
 .demo-badge {
   font-size: 10px;
   font-weight: 700;
-  color: #B45309;
   background: rgba(255, 255, 255, 0.6);
   padding: 2px 10px;
   border-radius: 10px;
   letter-spacing: 0.3px;
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   THEME: SLEEK
+   Dark slate header, sharp divider, no decorations, Inter font
+   ═══════════════════════════════════════════════════════════ */
+.month-header.theme-sleek {
+  background: #0F172A !important;
+  border-bottom: 1px solid #334155;
+  padding: 10px 16px 8px;
+}
+
+.month-header.theme-sleek::after { display: none; }
+
+.month-header.theme-sleek .nav-btn {
+  background: #1E293B;
+  border-color: #334155;
+  color: #94A3B8;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 11px;
+}
+
+.month-header.theme-sleek .nav-btn:active {
+  background: #334155;
+}
+
+.month-header.theme-sleek .month-name {
+  color: #F8FAFC !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: 26px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+.month-header.theme-sleek .month-year {
+  color: #64748B !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.month-header.theme-sleek .today-btn {
+  background: transparent;
+  border-color: #334155 !important;
+  color: #64748B !important;
+  border-radius: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.month-header.theme-sleek .today-btn:active {
+  background: #1E293B;
+  color: #94A3B8 !important;
+}
+
+.month-header.theme-sleek .demo-badge {
+  background: #1E293B;
+  color: #64748B;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   THEME: MUTED
+   Desaturated, off-white header. Monthly bg still subtle but faded.
+   ═══════════════════════════════════════════════════════════ */
+.month-header.theme-muted {
+  /* The JS-injected gradient bg remains but we layer a wash over it */
+  filter: saturate(0.28) brightness(1.06);
+}
+
+.month-header.theme-muted .month-name {
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: none;
+}
+
+.month-header.theme-muted .nav-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0,0,0,0.12);
+  color: #6B6360;
+}
+
+.month-header.theme-muted .today-btn {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   THEME: PLAYFUL
+   Big bold gradient header, Fredoka font, bouncy decos
+   ═══════════════════════════════════════════════════════════ */
+.month-header.theme-playful {
+  padding: 10px 12px 8px;
+  border-bottom: 4px solid rgba(255,255,255,0.25);
+}
+
+.month-header.theme-playful .month-name {
+  font-family: 'Fredoka One', cursive;
+  font-size: 34px !important;
+  letter-spacing: 3px;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+.month-header.theme-playful .month-year {
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  opacity: 0.85;
+}
+
+.month-header.theme-playful .deco-left,
+.month-header.theme-playful .deco-right {
+  font-size: 30px;
+  animation: bounce 0.8s ease-in-out infinite alternate;
+}
+
+.month-header.theme-playful .deco-right {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0) rotate(-5deg) scale(1); }
+  to   { transform: translateY(-6px) rotate(5deg) scale(1.1); }
+}
+
+.month-header.theme-playful .nav-btn {
+  background: rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  color: white;
+  font-size: 16px;
+  width: 40px;
+  height: 40px;
+}
+
+.month-header.theme-playful .nav-btn:active {
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(0.85) rotate(-3deg);
+}
+
+.month-header.theme-playful .today-btn {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border: 2px solid rgba(255,255,255,0.7) !important;
+  color: white !important;
+  border-radius: 20px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 3px 18px;
+}
+
+.month-header.theme-playful .demo-badge {
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.2);
 }

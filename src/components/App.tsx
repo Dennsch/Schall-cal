@@ -8,7 +8,10 @@ import {
 } from 'date-fns';
 import { MonthHeader } from './MonthHeader';
 import { CalendarGrid } from './CalendarGrid';
+import { ThemeSwitcher } from './ThemeSwitcher';
 import { useCalendar } from '../hooks/useCalendar';
+import type { ThemeId } from '../types/theme';
+import { loadTheme, saveTheme, applyTheme } from '../types/theme';
 import './App.css';
 
 export default function App() {
@@ -16,41 +19,44 @@ export default function App() {
   const { events, loading, isDemoMode } = useCalendar(currentDate);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Generate all days for the current month
+  // ── Theme ──────────────────────────────────────────────────────────
+  const [theme, setThemeState] = useState<ThemeId>(() => {
+    const t = loadTheme();
+    applyTheme(t); // apply immediately before first paint
+    return t;
+  });
+
+  const handleThemeChange = useCallback((id: ThemeId) => {
+    setThemeState(id);
+    saveTheme(id);
+    applyTheme(id);
+  }, []);
+
+  // ── Month navigation ───────────────────────────────────────────────
   const days = useMemo(() => {
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
     return eachDayOfInterval({ start: monthStart, end: monthEnd });
   }, [currentDate]);
 
-  const handlePrevMonth = useCallback(() => {
-    setCurrentDate((d) => subMonths(d, 1));
-  }, []);
+  const handlePrevMonth = useCallback(() => setCurrentDate((d) => subMonths(d, 1)), []);
+  const handleNextMonth = useCallback(() => setCurrentDate((d) => addMonths(d, 1)), []);
+  const handleToday = useCallback(() => setCurrentDate(new Date()), []);
 
-  const handleNextMonth = useCallback(() => {
-    setCurrentDate((d) => addMonths(d, 1));
-  }, []);
-
-  const handleToday = useCallback(() => {
-    setCurrentDate(new Date());
-  }, []);
-
-  // Auto-scroll to today's row when the month loads
+  // Auto-scroll to today
   useEffect(() => {
     requestAnimationFrame(() => {
       const gridBody = document.querySelector('.grid-body');
       if (!gridBody) return;
-
       const todayRow = gridBody.querySelector('.grid-row.today') as HTMLElement;
       if (todayRow) {
-        // Scroll so today is roughly 1/3 from the top
         const offset = todayRow.offsetTop - gridBody.clientHeight / 3;
         gridBody.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
       }
     });
   }, [currentDate, loading]);
 
-  // Dim the screen at night (10 PM - 6 AM) to save battery
+  // Night dimming (10 PM – 6 AM)
   const [nightMode, setNightMode] = useState(false);
   useEffect(() => {
     function checkNight() {
@@ -70,17 +76,21 @@ export default function App() {
         onNextMonth={handleNextMonth}
         onToday={handleToday}
         isDemoMode={isDemoMode}
+        theme={theme}
+        themeSwitcher={
+          <ThemeSwitcher current={theme} onChange={handleThemeChange} />
+        }
       />
       <CalendarGrid
         days={days}
         events={events}
         loading={loading}
+        theme={theme}
       />
 
-      {/* Loading indicator */}
       {loading && (
         <div className="loading-overlay">
-          <div className="loading-spinner">🗓️</div>
+          <div className="loading-spinner" />
         </div>
       )}
     </div>

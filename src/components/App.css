@@ -1,13 +1,14 @@
 /*
- * App.css — Global layout
+ * App.css — Global layout + CSS custom properties for theming
  *
- * SM-T350 specs: 1024x768 @ 189 PPI, Android 5+
- * Running in landscape (1024 wide × 768 tall).
- * Warm, kitchen-friendly aesthetic inspired by wall calendars.
+ * Theme is applied via [data-theme="classic|sleek|muted|playful"] on <html>.
+ * Components reference CSS vars defined per-theme below.
  */
 
-/* ─── Google Font ─── */
+/* ─── Font imports ─── */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
 /* ─── Reset ─── */
 *, *::before, *::after {
@@ -21,21 +22,51 @@ html, body, #root {
   overflow: hidden;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
 
 body {
-  font-family: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #FDF6EC;
-  color: #3E2723;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* Prevent accidental text selection on tablet */
   -webkit-user-select: none;
   user-select: none;
-
-  /* Keep screen on via CSS (supplemented by Capacitor plugin) */
   -webkit-backface-visibility: hidden;
+}
+
+/* ─── Theme: Classic (warm wall-calendar) ─── */
+[data-theme="classic"] {
+  --app-bg:        #FDF6EC;
+  --app-color:     #3E2723;
+  --app-font:      'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --header-border: 3px solid rgba(0,0,0,0.08);
+  --loading-color: #F5A623;
+}
+
+/* ─── Theme: Sleek (dark slate minimalist) ─── */
+[data-theme="sleek"] {
+  --app-bg:        #0F172A;
+  --app-color:     #E2E8F0;
+  --app-font:      'Inter', system-ui, sans-serif;
+  --header-border: 1px solid #1E293B;
+  --loading-color: #38BDF8;
+}
+
+/* ─── Theme: Muted (soft desaturated pastels) ─── */
+[data-theme="muted"] {
+  --app-bg:        #F4F1EE;
+  --app-color:     #4A4543;
+  --app-font:      'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --header-border: 2px solid #DDD8D4;
+  --loading-color: #8B9BAA;
+}
+
+/* ─── Theme: Playful (bold & bouncy) ─── */
+[data-theme="playful"] {
+  --app-bg:        #FFFBF0;
+  --app-color:     #2D2A3E;
+  --app-font:      'Fredoka One', 'Nunito', cursive, sans-serif;
+  --header-border: 4px solid rgba(0,0,0,0.08);
+  --loading-color: #FF4F9B;
 }
 
 /* ─── App Container ─── */
@@ -44,74 +75,65 @@ body {
   flex-direction: column;
   height: 100vh;
   height: 100dvh;
-  background: #FDF6EC;
+  background: var(--app-bg);
+  color: var(--app-color);
+  font-family: var(--app-font);
   position: relative;
   overflow: hidden;
-  transition: filter 0.5s ease;
+  transition: filter 0.5s ease, background 0.3s ease;
 }
 
-/* Night mode — dim screen for battery saving */
 .app-container.night-mode {
   filter: brightness(0.3);
 }
 
-/* ─── Loading ─── */
+/* ─── Loading indicator ─── */
 .loading-overlay {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 12px;
+  right: 12px;
   z-index: 100;
   pointer-events: none;
 }
 
 .loading-spinner {
-  font-size: 24px;
-  animation: spin 1.5s ease-in-out infinite;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--loading-color);
+  border-right-color: var(--loading-color);
+  animation: spin 0.9s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.1); }
-  100% { transform: rotate(360deg) scale(1); }
+  to { transform: rotate(360deg); }
 }
 
-/* ─── Tablet Optimizations ─── */
-
-/* Landscape orientation lock hint */
+/* ─── Portrait guard ─── */
 @media (orientation: portrait) {
   .app-container::before {
-    content: '📱 Please rotate to landscape mode';
+    content: 'Please rotate to landscape';
     position: fixed;
     inset: 0;
-    background: rgba(253, 246, 236, 0.98);
+    background: var(--app-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
     font-weight: 700;
-    color: #8B6914;
+    color: var(--app-color);
+    opacity: 0.7;
     z-index: 1000;
     text-align: center;
     padding: 40px;
   }
 }
 
-/* Prevent pull-to-refresh on Android */
-html {
-  overscroll-behavior: none;
-}
-
-/* Disable hover effects on touch (saves repaints) */
 @media (hover: none) {
-  .nav-btn:hover,
-  .today-btn:hover {
-    transform: none;
-    background: inherit;
-  }
+  .nav-btn:hover, .today-btn:hover { transform: none; }
 }
 
-/* ─── Battery Optimization ─── */
-/* Reduce animations when battery is low */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -120,19 +142,13 @@ html {
   }
 }
 
-/* Hide scrollbar for cleaner tablet look */
-.grid-body {
-  scrollbar-width: thin;
-}
-
 @media (max-height: 700px) {
-  .month-header { padding: 4px 8px 2px; }
-  .month-name { font-size: 22px; }
-  .deco-left, .deco-right { font-size: 18px; }
-  .grid-row { min-height: 30px; }
-  .date-number { font-size: 15px; }
-  .date-day-name { font-size: 9px; }
-  .event-chip { font-size: 9px; }
-  .member-emoji { font-size: 13px; }
-  .member-name { font-size: 10px; }
+  .month-header { padding: 3px 8px 2px; }
+  .month-name { font-size: 20px !important; }
+  .deco-left, .deco-right { font-size: 16px !important; }
+  .grid-row { min-height: 28px; }
+  .date-number { font-size: 14px !important; }
+  .date-day-name { font-size: 9px !important; }
+  .event-chip { font-size: 9px !important; }
+  .member-name { font-size: 10px !important; }
 }

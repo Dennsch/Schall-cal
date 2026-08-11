@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { format, isToday, isWeekend } from 'date-fns';
 import type { CalendarEvent } from '../types/calendar';
+import type { ThemeId } from '../types/theme';
 import { FAMILY_MEMBERS } from '../types/calendar';
 import './CalendarGrid.css';
 
@@ -8,28 +9,24 @@ interface CalendarGridProps {
   days: Date[];
   events: CalendarEvent[];
   loading: boolean;
+  theme: ThemeId;
 }
 
-export function CalendarGrid({ days, events, loading }: CalendarGridProps) {
-  // Group events by day and member
+export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps) {
   const eventMap = useMemo(() => {
     const map = new Map<string, Map<string, CalendarEvent[]>>();
     for (const event of events) {
       const dayKey = format(event.start, 'yyyy-MM-dd');
-      if (!map.has(dayKey)) {
-        map.set(dayKey, new Map());
-      }
+      if (!map.has(dayKey)) map.set(dayKey, new Map());
       const dayMap = map.get(dayKey)!;
-      if (!dayMap.has(event.memberId)) {
-        dayMap.set(event.memberId, []);
-      }
+      if (!dayMap.has(event.memberId)) dayMap.set(event.memberId, []);
       dayMap.get(event.memberId)!.push(event);
     }
     return map;
   }, [events]);
 
   return (
-    <div className="calendar-grid" role="grid" aria-label="Family Calendar">
+    <div className={`calendar-grid theme-${theme}`} role="grid" aria-label="Family Calendar">
       {/* Column headers */}
       <div className="grid-header">
         <div className="header-date-col">
@@ -62,13 +59,11 @@ export function CalendarGrid({ days, events, loading }: CalendarGridProps) {
               className={`grid-row ${today ? 'today' : ''} ${weekend ? 'weekend' : ''}`}
               role="row"
             >
-              {/* Date column */}
               <div className="row-date-col">
                 <span className="date-number">{format(day, 'd')}</span>
-                <span className="date-day-name">{format(day, 'EEEE')}</span>
+                <span className="date-day-name">{format(day, 'EEE')}</span>
               </div>
 
-              {/* Member columns */}
               {FAMILY_MEMBERS.map((member) => {
                 const memberEvents = dayEvents?.get(member.id) || [];
                 return (
@@ -83,6 +78,7 @@ export function CalendarGrid({ days, events, loading }: CalendarGridProps) {
                         key={event.id}
                         event={event}
                         color={member.color}
+                        theme={theme}
                       />
                     ))}
                   </div>
@@ -96,10 +92,27 @@ export function CalendarGrid({ days, events, loading }: CalendarGridProps) {
   );
 }
 
-function EventChip({ event, color }: { event: CalendarEvent; color: string }) {
+function EventChip({
+  event,
+  color,
+  theme,
+}: {
+  event: CalendarEvent;
+  color: string;
+  theme: ThemeId;
+}) {
+  // Sleek theme uses a left-border pill instead of a filled chip
+  const chipClass = [
+    'event-chip',
+    event.allDay ? 'all-day' : '',
+    `chip-${theme}`,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div
-      className={`event-chip ${event.allDay ? 'all-day' : ''}`}
+      className={chipClass}
       style={{ '--chip-color': color } as React.CSSProperties}
       title={`${event.title}${event.allDay ? ' (All Day)' : ''}`}
     >
