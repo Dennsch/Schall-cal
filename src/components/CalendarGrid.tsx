@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { format, isToday, isWeekend } from 'date-fns';
 import type { CalendarEvent } from '../types/calendar';
 import type { ThemeId } from '../types/theme';
@@ -12,7 +12,22 @@ interface CalendarGridProps {
   theme: ThemeId;
 }
 
+function useIsPortrait() {
+  const [portrait, setPortrait] = useState(
+    () => window.matchMedia('(orientation: portrait)').matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(orientation: portrait)');
+    const handler = (e: MediaQueryListEvent) => setPortrait(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return portrait;
+}
+
 export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps) {
+  const isPortrait = useIsPortrait();
+
   const eventMap = useMemo(() => {
     const map = new Map<string, Map<string, CalendarEvent[]>>();
     for (const event of events) {
@@ -25,65 +40,135 @@ export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps
     return map;
   }, [events]);
 
-  return (
-    <div className={`calendar-grid theme-${theme}`} role="grid" aria-label="Family Calendar">
-      {/* Column headers */}
-      <div className="grid-header">
-        <div className="header-date-col">
-          <span className="header-hash">#</span>
-          <span className="header-day">Day</span>
-        </div>
-        {FAMILY_MEMBERS.map((member) => (
-          <div
-            key={member.id}
-            className="header-member-col"
-            style={{ '--member-color': member.color } as React.CSSProperties}
-          >
-            <span className="member-emoji">{member.emoji}</span>
-            <span className="member-name">{member.name}</span>
-          </div>
-        ))}
-      </div>
+  // Split members into two rows for portrait: [0,1] top, [2,3] bottom
+  const topMembers = FAMILY_MEMBERS.slice(0, 2);
+  const bottomMembers = FAMILY_MEMBERS.slice(2);
 
-      {/* Day rows */}
+  return (
+    <div
+      className={`calendar-grid theme-${theme} ${isPortrait ? 'portrait' : 'landscape'}`}
+      role="grid"
+      aria-label="Family Calendar"
+    >
+      {/* ── Column headers ── */}
+      {isPortrait ? (
+        <div className="grid-header portrait-header">
+          <div className="header-date-col">
+            <span className="header-hash">#</span>
+            <span className="header-day">Day</span>
+          </div>
+          {/* Top row: first 2 members */}
+          {topMembers.map((member) => (
+            <div
+              key={member.id}
+              className="header-member-col"
+              style={{ '--member-color': member.color } as React.CSSProperties}
+            >
+              <span className="member-emoji">{member.emoji}</span>
+              <span className="member-name">{member.name}</span>
+            </div>
+          ))}
+          {/* Bottom row header: blank date placeholder + last 2 members */}
+          <div className="header-date-col header-date-col--sub" />
+          {bottomMembers.map((member) => (
+            <div
+              key={member.id}
+              className="header-member-col header-member-col--sub"
+              style={{ '--member-color': member.color } as React.CSSProperties}
+            >
+              <span className="member-emoji">{member.emoji}</span>
+              <span className="member-name">{member.name}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid-header">
+          <div className="header-date-col">
+            <span className="header-hash">#</span>
+            <span className="header-day">Day</span>
+          </div>
+          {FAMILY_MEMBERS.map((member) => (
+            <div
+              key={member.id}
+              className="header-member-col"
+              style={{ '--member-color': member.color } as React.CSSProperties}
+            >
+              <span className="member-emoji">{member.emoji}</span>
+              <span className="member-name">{member.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Day rows ── */}
       <div className={`grid-body ${loading ? 'loading' : ''}`}>
         {days.map((day) => {
           const dayKey = format(day, 'yyyy-MM-dd');
           const dayEvents = eventMap.get(dayKey);
           const today = isToday(day);
           const weekend = isWeekend(day);
+          const rowClass = `grid-row ${today ? 'today' : ''} ${weekend ? 'weekend' : ''}`;
+
+          if (isPortrait) {
+            return (
+              <div key={dayKey} className={`${rowClass} portrait-day`} role="row">
+                {/* Sub-row 1: date + first 2 members */}
+                <div className="portrait-subrow portrait-subrow--top">
+                  <div className="row-date-col">
+                    <span className="date-number">{format(day, 'd')}</span>
+                    <span className="date-day-name">{format(day, 'EEE')}</span>
+                  </div>
+                  {topMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="row-member-col"
+                      style={{ '--member-color': member.color } as React.CSSProperties}
+                      role="gridcell"
+                    >
+                      {(dayEvents?.get(member.id) || []).map((event) => (
+                        <EventChip key={event.id} event={event} color={member.color} theme={theme} />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+                {/* Sub-row 2: spacer + last 2 members */}
+                <div className="portrait-subrow portrait-subrow--bottom">
+                  <div className="row-date-col row-date-col--spacer" />
+                  {bottomMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="row-member-col"
+                      style={{ '--member-color': member.color } as React.CSSProperties}
+                      role="gridcell"
+                    >
+                      {(dayEvents?.get(member.id) || []).map((event) => (
+                        <EventChip key={event.id} event={event} color={member.color} theme={theme} />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
 
           return (
-            <div
-              key={dayKey}
-              className={`grid-row ${today ? 'today' : ''} ${weekend ? 'weekend' : ''}`}
-              role="row"
-            >
+            <div key={dayKey} className={rowClass} role="row">
               <div className="row-date-col">
                 <span className="date-number">{format(day, 'd')}</span>
                 <span className="date-day-name">{format(day, 'EEE')}</span>
               </div>
-
-              {FAMILY_MEMBERS.map((member) => {
-                const memberEvents = dayEvents?.get(member.id) || [];
-                return (
-                  <div
-                    key={member.id}
-                    className="row-member-col"
-                    style={{ '--member-color': member.color } as React.CSSProperties}
-                    role="gridcell"
-                  >
-                    {memberEvents.map((event) => (
-                      <EventChip
-                        key={event.id}
-                        event={event}
-                        color={member.color}
-                        theme={theme}
-                      />
-                    ))}
-                  </div>
-                );
-              })}
+              {FAMILY_MEMBERS.map((member) => (
+                <div
+                  key={member.id}
+                  className="row-member-col"
+                  style={{ '--member-color': member.color } as React.CSSProperties}
+                  role="gridcell"
+                >
+                  {(dayEvents?.get(member.id) || []).map((event) => (
+                    <EventChip key={event.id} event={event} color={member.color} theme={theme} />
+                  ))}
+                </div>
+              ))}
             </div>
           );
         })}
@@ -101,7 +186,6 @@ function EventChip({
   color: string;
   theme: ThemeId;
 }) {
-  // Sleek theme uses a left-border pill instead of a filled chip
   const chipClass = [
     'event-chip',
     event.allDay ? 'all-day' : '',

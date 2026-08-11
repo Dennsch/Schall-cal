@@ -1,8 +1,8 @@
 /*
  * App.css — Global layout + CSS custom properties for theming
  *
+ * Supports both landscape (1024×768) and portrait (768×1024) on SM-T350.
  * Theme is applied via [data-theme="classic|sleek|muted|playful"] on <html>.
- * Components reference CSS vars defined per-theme below.
  */
 
 /* ─── Font imports ─── */
@@ -97,10 +97,10 @@ body {
 }
 
 .loading-spinner {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 2.5px solid transparent;
   border-top-color: var(--loading-color);
   border-right-color: var(--loading-color);
   animation: spin 0.9s linear infinite;
@@ -110,26 +110,7 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* ─── Portrait guard ─── */
-@media (orientation: portrait) {
-  .app-container::before {
-    content: 'Please rotate to landscape';
-    position: fixed;
-    inset: 0;
-    background: var(--app-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--app-color);
-    opacity: 0.7;
-    z-index: 1000;
-    text-align: center;
-    padding: 40px;
-  }
-}
-
+/* ─── Interaction ─── */
 @media (hover: none) {
   .nav-btn:hover, .today-btn:hover { transform: none; }
 }
@@ -142,13 +123,15 @@ body {
   }
 }
 
-@media (max-height: 700px) {
-  .month-header { padding: 3px 8px 2px; }
-  .month-name { font-size: 20px !important; }
-  .deco-left, .deco-right { font-size: 16px !important; }
-  .grid-row { min-height: 28px; }
-  .date-number { font-size: 14px !important; }
-  .date-day-name { font-size: 9px !important; }
-  .event-chip { font-size: 9px !important; }
-  .member-name { font-size: 10px !important; }
+/* ─── Portrait orientation ─── */
+/* No overlay lock — we support portrait fully.
+   The grid switches to a 2-row-per-day layout via .portrait class on .calendar-grid (added in React).
+   We also bump up font sizes since portrait gives us more vertical room. */
+@media (orientation: portrait) {
+  .month-name    { font-size: 32px !important; }
+  .month-year    { font-size: 18px !important; }
+  .deco-left,
+  .deco-right    { font-size: 28px !important; }
+  .member-emoji  { font-size: 20px !important; }
+  .member-name   { font-size: 14px !important; }
 }
