@@ -1,0 +1,229 @@
+/*
+ * CalendarGrid.css
+ * Styled to match a physical family wall calendar aesthetic —
+ * warm colors, clear columns, friendly readability on an 8" tablet.
+ *
+ * SM-T350 = 1024x768 logical pixels in landscape
+ */
+
+.calendar-grid {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ─── Header Row ─── */
+.grid-header {
+  display: flex;
+  background: linear-gradient(135deg, #FFF5E6 0%, #FFE8CC 100%);
+  border-bottom: 3px solid #E8A54B;
+  padding: 6px 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-date-col {
+  width: 110px;
+  min-width: 110px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  font-weight: 700;
+  font-size: 11px;
+  color: #8B6914;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header-hash { opacity: 0.5; }
+
+.header-member-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  border-left: 2px solid rgba(232, 165, 75, 0.3);
+  transition: transform 0.2s;
+}
+
+.member-emoji {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.member-name {
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--member-color);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* ─── Body ─── */
+.grid-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+
+  /* Thin scrollbar for tablet */
+  scrollbar-width: thin;
+  scrollbar-color: #E8A54B transparent;
+}
+
+.grid-body::-webkit-scrollbar { width: 4px; }
+.grid-body::-webkit-scrollbar-thumb { background: #E8A54B; border-radius: 4px; }
+.grid-body::-webkit-scrollbar-track { background: transparent; }
+
+.grid-body.loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ─── Day Row ─── */
+.grid-row {
+  display: flex;
+  min-height: 36px;
+  border-bottom: 1px solid #F0DDB8;
+  transition: background 0.15s;
+}
+
+.grid-row:nth-child(odd) {
+  background: #FFFCF7;
+}
+
+.grid-row:nth-child(even) {
+  background: #FFF9F0;
+}
+
+.grid-row.weekend {
+  background: #FFF3E0;
+}
+
+.grid-row.weekend:nth-child(even) {
+  background: #FFEDD5;
+}
+
+/* Today highlight */
+.grid-row.today {
+  background: linear-gradient(90deg, #FFF0B3 0%, #FFF8DC 20%, #FFFBE6 100%) !important;
+  border-top: 2px solid #F5A623;
+  border-bottom: 2px solid #F5A623;
+  position: relative;
+}
+
+.grid-row.today::before {
+  content: '▸';
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #F5A623;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 2;
+}
+
+/* ─── Date Column ─── */
+.row-date-col {
+  width: 110px;
+  min-width: 110px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 14px;
+  flex-shrink: 0;
+}
+
+.date-number {
+  font-weight: 800;
+  font-size: 18px;
+  color: #5A3E1B;
+  width: 26px;
+  text-align: right;
+  line-height: 1;
+}
+
+.grid-row.weekend .date-number {
+  color: #C05621;
+}
+
+.grid-row.today .date-number {
+  color: #D97706;
+  font-size: 20px;
+  text-shadow: 0 1px 2px rgba(217, 119, 6, 0.2);
+}
+
+.date-day-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9C7C4E;
+  letter-spacing: 0.2px;
+}
+
+.grid-row.weekend .date-day-name {
+  color: #C05621;
+  font-weight: 700;
+}
+
+.grid-row.today .date-day-name {
+  color: #D97706;
+  font-weight: 700;
+}
+
+/* ─── Member Columns ─── */
+.row-member-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px 4px;
+  border-left: 1px solid rgba(240, 221, 184, 0.6);
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Column tinting */
+.row-member-col:nth-child(2) { border-left: 2px solid rgba(74, 144, 217, 0.15); }
+.row-member-col:nth-child(3) { border-left: 2px solid rgba(232, 99, 111, 0.15); }
+.row-member-col:nth-child(4) { border-left: 2px solid rgba(94, 194, 105, 0.15); }
+.row-member-col:nth-child(5) { border-left: 2px solid rgba(245, 166, 35, 0.15); }
+
+/* ─── Event Chips ─── */
+.event-chip {
+  background: var(--chip-color);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.92;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.15s;
+  max-width: 100%;
+}
+
+.event-chip.all-day {
+  background: linear-gradient(135deg, var(--chip-color), color-mix(in srgb, var(--chip-color) 80%, white));
+  font-style: italic;
+  font-weight: 700;
+}
+
+.event-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
