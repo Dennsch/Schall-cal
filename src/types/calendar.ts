@@ -31,14 +31,14 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
   },
   {
     id: 'member2',
-    name: 'Partner',
+    name: 'Angela',
     color: '#E8636F',
     emoji: '👩',
     calendarId: '',
   },
   {
     id: 'member3',
-    name: 'Kid',
+    name: 'Taron',
     color: '#5EC269',
     emoji: '🧒',
     calendarId: '',
