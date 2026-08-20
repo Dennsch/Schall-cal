@@ -4,17 +4,18 @@ import {
   initGoogleApi,
   createTokenClient,
   requestAccess,
-  isSignedIn,
   fetchAllEvents,
   generateDemoEvents,
 } from '../services/googleCalendar';
 import { GOOGLE_CONFIG } from '../services/config';
 
+export type AuthState = 'initializing' | 'needs-signin' | 'authenticated' | 'error';
+
 interface UseCalendarReturn {
   events: CalendarEvent[];
   loading: boolean;
   error: string | null;
-  isAuthenticated: boolean;
+  authState: AuthState;
   isDemoMode: boolean;
   signIn: () => void;
   refreshEvents: (date: Date) => void;
@@ -24,17 +25,16 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authState, setAuthState] = useState<AuthState>('initializing');
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [apiReady, setApiReady] = useState(false);
   const refreshTimerRef = useRef<number | null>(null);
 
-  // Initialize Google API
+  // Initialize Google API on mount
   useEffect(() => {
     const hasApiKey = !!GOOGLE_CONFIG.apiKey && !!GOOGLE_CONFIG.clientId;
 
     if (!hasApiKey) {
-      // No API keys configured - use demo mode
       setIsDemoMode(true);
       setEvents(generateDemoEvents(currentDate));
       setLoading(false);
@@ -46,19 +46,25 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
         setApiReady(true);
         createTokenClient(
           () => {
-            setIsAuthenticated(true);
+            // OAuth succeeded
+            setAuthState('authenticated');
             setError(null);
           },
-          (err) => setError(err)
+          (err) => {
+            // OAuth failed or was dismissed
+            console.error('OAuth error:', err);
+            setAuthState('needs-signin');
+            setError(err);
+            setLoading(false);
+          }
         );
-
-        // Check if already signed in
-        if (isSignedIn()) {
-          setIsAuthenticated(true);
-        }
+        // Always start at needs-signin — user must tap once per session
+        setAuthState('needs-signin');
+        setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to init Google API:', err);
+        // Fall back to demo mode if GAPI fails to load (e.g. network issue)
         setIsDemoMode(true);
         setEvents(generateDemoEvents(currentDate));
         setLoading(false);
@@ -66,7 +72,6 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch events when authenticated or date changes
   const refreshEvents = useCallback(
     async (date: Date) => {
       if (isDemoMode) {
@@ -74,8 +79,7 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
         setLoading(false);
         return;
       }
-
-      if (!isAuthenticated || !apiReady) {
+      if (authState !== 'authenticated' || !apiReady) {
         setLoading(false);
         return;
       }
@@ -85,29 +89,31 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
         const fetched = await fetchAllEvents(date);
         setEvents(fetched);
         setError(null);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching events:', err);
-        setError('Failed to load events');
+        // 401 means the token expired — ask to sign in again
+        if (err?.status === 401) {
+          setAuthState('needs-signin');
+        }
+        setError('Failed to load calendar events');
       } finally {
         setLoading(false);
       }
     },
-    [isAuthenticated, isDemoMode, apiReady]
+    [authState, isDemoMode, apiReady]
   );
 
+  // Fetch whenever we become authenticated or the month changes
   useEffect(() => {
     refreshEvents(currentDate);
   }, [currentDate, refreshEvents]);
 
-  // Auto-refresh every 5 minutes to save battery
+  // Auto-refresh every 5 minutes
   useEffect(() => {
-    if (refreshTimerRef.current) {
-      clearInterval(refreshTimerRef.current);
-    }
+    if (refreshTimerRef.current) clearInterval(refreshTimerRef.current);
     refreshTimerRef.current = window.setInterval(() => {
       refreshEvents(currentDate);
     }, 5 * 60 * 1000);
-
     return () => {
       if (refreshTimerRef.current) clearInterval(refreshTimerRef.current);
     };
@@ -121,7 +127,7 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
     events,
     loading,
     error,
-    isAuthenticated,
+    authState,
     isDemoMode,
     signIn,
     refreshEvents,

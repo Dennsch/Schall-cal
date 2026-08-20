@@ -1,0 +1,122 @@
+.signin-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--app-bg, #FDF6EC);
+  z-index: 50;
+}
+
+.signin-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 48px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+}
+
+.signin-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.signin-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--app-color, #3E2723);
+  font-family: inherit;
+  margin: 0;
+}
+
+.signin-subtitle {
+  font-size: 15px;
+  color: var(--app-color, #3E2723);
+  opacity: 0.65;
+  font-family: inherit;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.signin-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 2px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #3C4043;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.18s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  -webkit-tap-highlight-color: transparent;
+  /* Large tap target for tablet */
+  min-width: 220px;
+  justify-content: center;
+}
+
+.signin-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.signin-error {
+  font-size: 13px;
+  color: #C62828;
+  background: #FFEBEE;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: inherit;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.signin-note {
+  font-size: 12px;
+  opacity: 0.45;
+  font-family: inherit;
+  margin: 0;
+}
+
+/* Theme overrides */
+[data-theme="sleek"] .signin-card {
+  background: #1E293B;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+[data-theme="sleek"] .signin-btn {
+  background: #0F172A;
+  border-color: #334155;
+  color: #E2E8F0;
+}
+
+[data-theme="sleek"] .signin-error {
+  background: rgba(198, 40, 40, 0.15);
+  color: #FCA5A5;
+}
+
+[data-theme="playful"] .signin-card {
+  border: 3px solid #F0E6FF;
+  box-shadow: 0 8px 40px rgba(167, 139, 250, 0.2);
+}
+
+[data-theme="playful"] .signin-btn {
+  border-color: #D8B4FE;
+  border-width: 3px;
+}
