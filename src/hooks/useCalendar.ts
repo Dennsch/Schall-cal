@@ -4,6 +4,8 @@ import {
   initGoogleApi,
   createTokenClient,
   requestAccess,
+  requestAccessSilent,
+  hasPreviouslyGranted,
   fetchAllEvents,
   generateDemoEvents,
 } from '../services/googleCalendar';
@@ -30,7 +32,6 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
   const [apiReady, setApiReady] = useState(false);
   const refreshTimerRef = useRef<number | null>(null);
 
-  // Initialize Google API on mount
   useEffect(() => {
     const hasApiKey = !!GOOGLE_CONFIG.apiKey && !!GOOGLE_CONFIG.clientId;
 
@@ -44,27 +45,39 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
     initGoogleApi()
       .then(() => {
         setApiReady(true);
+
         createTokenClient(
           () => {
-            // OAuth succeeded
+            // Token granted (silent or manual)
             setAuthState('authenticated');
             setError(null);
           },
           (err) => {
-            // OAuth failed or was dismissed
-            console.error('OAuth error:', err);
-            setAuthState('needs-signin');
-            setError(err);
+            // 'immediate_failed' = no stored grant → need manual sign-in
+            // anything else = actual error
+            if (err === 'immediate_failed') {
+              setAuthState('needs-signin');
+            } else {
+              console.error('OAuth error:', err);
+              setAuthState('needs-signin');
+              setError(err);
+            }
             setLoading(false);
           }
         );
-        // Always start at needs-signin — user must tap once per session
-        setAuthState('needs-signin');
-        setLoading(false);
+
+        // If the user has signed in before, attempt a silent token refresh —
+        // no popup, Google re-issues the token in the background
+        if (hasPreviouslyGranted()) {
+          setAuthState('initializing'); // keep spinner, not sign-in screen
+          requestAccessSilent();
+        } else {
+          setAuthState('needs-signin');
+          setLoading(false);
+        }
       })
       .catch((err) => {
         console.error('Failed to init Google API:', err);
-        // Fall back to demo mode if GAPI fails to load (e.g. network issue)
         setIsDemoMode(true);
         setEvents(generateDemoEvents(currentDate));
         setLoading(false);
@@ -91,9 +104,10 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
         setError(null);
       } catch (err: any) {
         console.error('Error fetching events:', err);
-        // 401 means the token expired — ask to sign in again
         if (err?.status === 401) {
-          setAuthState('needs-signin');
+          // Token expired mid-session — try a silent refresh first
+          setAuthState('initializing');
+          requestAccessSilent();
         }
         setError('Failed to load calendar events');
       } finally {
@@ -103,7 +117,6 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
     [authState, isDemoMode, apiReady]
   );
 
-  // Fetch whenever we become authenticated or the month changes
   useEffect(() => {
     refreshEvents(currentDate);
   }, [currentDate, refreshEvents]);
