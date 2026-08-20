@@ -4,8 +4,9 @@ import {
   initGoogleApi,
   createTokenClient,
   requestAccess,
-  requestAccessSilent,
-  hasPreviouslyGranted,
+  restoreToken,
+  loadStoredToken,
+  clearStoredToken,
   fetchAllEvents,
   generateDemoEvents,
 } from '../services/googleCalendar';
@@ -48,29 +49,25 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
 
         createTokenClient(
           () => {
-            // Token granted (silent or manual)
             setAuthState('authenticated');
             setError(null);
           },
           (err) => {
-            // 'immediate_failed' = no stored grant → need manual sign-in
-            // anything else = actual error
-            if (err === 'immediate_failed') {
-              setAuthState('needs-signin');
-            } else {
-              console.error('OAuth error:', err);
-              setAuthState('needs-signin');
-              setError(err);
-            }
+            console.error('OAuth error:', err);
+            // Token expired or revoked — clear storage and ask to sign in again
+            clearStoredToken();
+            setAuthState('needs-signin');
+            setError(err === 'access_denied' ? null : err);
             setLoading(false);
           }
         );
 
-        // If the user has signed in before, attempt a silent token refresh —
-        // no popup, Google re-issues the token in the background
-        if (hasPreviouslyGranted()) {
-          setAuthState('initializing'); // keep spinner, not sign-in screen
-          requestAccessSilent();
+        // Try to restore a previously saved token — if still valid, skip sign-in entirely
+        const stored = loadStoredToken();
+        if (stored) {
+          restoreToken(stored.token);
+          setAuthState('authenticated');
+          // loading stays true — refreshEvents will fire and update it
         } else {
           setAuthState('needs-signin');
           setLoading(false);
@@ -105,9 +102,9 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
       } catch (err: any) {
         console.error('Error fetching events:', err);
         if (err?.status === 401) {
-          // Token expired mid-session — try a silent refresh first
-          setAuthState('initializing');
-          requestAccessSilent();
+          // Token rejected by server — clear it and require sign-in
+          clearStoredToken();
+          setAuthState('needs-signin');
         }
         setError('Failed to load calendar events');
       } finally {
@@ -121,7 +118,7 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
     refreshEvents(currentDate);
   }, [currentDate, refreshEvents]);
 
-  // Auto-refresh every 5 minutes
+  // Auto-refresh every 5 minutes — also keeps renewing the token before it can expire
   useEffect(() => {
     if (refreshTimerRef.current) clearInterval(refreshTimerRef.current);
     refreshTimerRef.current = window.setInterval(() => {
@@ -136,13 +133,5 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
     requestAccess();
   }, []);
 
-  return {
-    events,
-    loading,
-    error,
-    authState,
-    isDemoMode,
-    signIn,
-    refreshEvents,
-  };
+  return { events, loading, error, authState, isDemoMode, signIn, refreshEvents };
 }

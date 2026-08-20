@@ -22,14 +22,16 @@ declare namespace google.accounts.oauth2 {
   interface TokenResponse {
     access_token: string;
     error?: string;
-    expires_in: number;
+    expires_in: number | string;
     scope: string;
     token_type: string;
+    login_hint?: string;
   }
 
   function initTokenClient(config: {
     client_id: string;
     scope: string;
+    login_hint?: string;
     callback: (response: TokenResponse) => void;
   }): TokenClient;
 
