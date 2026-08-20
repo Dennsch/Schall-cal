@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-// Load the GAPI script
+// Load the GAPI script — init without discoveryDocs so no Discovery API call is made
 function loadGapiScript(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (gapiLoaded) { resolve(); return; }
@@ -22,10 +22,8 @@ function loadGapiScript(): Promise<void> {
     script.onload = () => {
       window.gapi.load('client', async () => {
         try {
-          await window.gapi.client.init({
-            apiKey: GOOGLE_CONFIG.apiKey,
-            discoveryDocs: GOOGLE_CONFIG.discoveryDocs,
-          });
+          // Only set the API key — no discoveryDocs, so no Discovery API request is made
+          await window.gapi.client.init({ apiKey: GOOGLE_CONFIG.apiKey });
           gapiLoaded = true;
           resolve();
         } catch (err) {
@@ -44,10 +42,7 @@ function loadGisScript(): Promise<void> {
     if (gisLoaded) { resolve(); return; }
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
-    script.onload = () => {
-      gisLoaded = true;
-      resolve();
-    };
+    script.onload = () => { gisLoaded = true; resolve(); };
     script.onerror = reject;
     document.head.appendChild(script);
   });
@@ -76,17 +71,8 @@ export function createTokenClient(
 
 export function requestAccess(): void {
   if (tokenClient) {
-    // Check if we have a token already
-    if (window.gapi.client.getToken() === null) {
-      tokenClient.requestAccessToken({ prompt: 'consent' });
-    } else {
-      tokenClient.requestAccessToken({ prompt: '' });
-    }
+    tokenClient.requestAccessToken({ prompt: 'consent' });
   }
-}
-
-export function isSignedIn(): boolean {
-  return window.gapi?.client?.getToken() !== null;
 }
 
 export function signOut(): void {
@@ -97,7 +83,7 @@ export function signOut(): void {
   }
 }
 
-// Fetch events for a specific calendar
+// Fetch events for a specific calendar using the REST API directly (no discovery needed)
 async function fetchCalendarEvents(
   calendarId: string,
   memberId: string,
@@ -107,13 +93,15 @@ async function fetchCalendarEvents(
   if (!calendarId) return [];
 
   try {
-    const response = await window.gapi.client.calendar.events.list({
-      calendarId,
-      timeMin: timeMin.toISOString(),
-      timeMax: timeMax.toISOString(),
-      singleEvents: true,
-      orderBy: 'startTime',
-      maxResults: 250,
+    const response = await window.gapi.client.request({
+      path: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+      params: {
+        timeMin: timeMin.toISOString(),
+        timeMax: timeMax.toISOString(),
+        singleEvents: true,
+        orderBy: 'startTime',
+        maxResults: 250,
+      },
     });
 
     const items = response.result.items || [];
@@ -126,16 +114,15 @@ async function fetchCalendarEvents(
       memberId,
       color: item.colorId,
     }));
-  } catch (err) {
+  } catch (err: any) {
     console.error(`Error fetching calendar ${calendarId}:`, err);
-    return [];
+    // Re-throw so the hook can detect 401s
+    throw err;
   }
 }
 
 // Fetch all family events for a month
-export async function fetchAllEvents(
-  date: Date
-): Promise<CalendarEvent[]> {
+export async function fetchAllEvents(date: Date): Promise<CalendarEvent[]> {
   const timeMin = startOfMonth(date);
   const timeMax = endOfMonth(date);
 
@@ -150,13 +137,18 @@ export async function fetchAllEvents(
     .filter(([, calId]) => calId)
     .map(([memberId, calId]) =>
       fetchCalendarEvents(calId, memberId, timeMin, timeMax)
+        .catch((err) => {
+          // Log per-calendar errors but don't fail the whole fetch
+          console.error(`Skipping calendar ${memberId} (${calId}):`, err);
+          return [] as CalendarEvent[];
+        })
     );
 
   const results = await Promise.all(promises);
   return results.flat();
 }
 
-// Generate demo events for preview mode
+// Generate demo events for preview / no-API-key mode
 export function generateDemoEvents(date: Date): CalendarEvent[] {
   const events: CalendarEvent[] = [];
   const year = date.getFullYear();
@@ -167,15 +159,15 @@ export function generateDemoEvents(date: Date): CalendarEvent[] {
     { memberId: 'member1', title: 'Dentist', days: [7], allDay: false },
     { memberId: 'member1', title: 'Gym', days: [2, 4, 9, 11, 16, 18, 23, 25], allDay: false },
     { memberId: 'member2', title: 'Yoga', days: [1, 8, 15, 22, 29], allDay: false },
-    { memberId: 'member2', title: 'Book Club', days: [1,12], allDay: false },
-    { memberId: 'member2', title: 'Lunch w/ Sarah', days: [1,5], allDay: false },
-    { memberId: 'member2', title: 'Hair Appt', days: [1,20], allDay: false },
+    { memberId: 'member2', title: 'Book Club', days: [12], allDay: false },
+    { memberId: 'member2', title: 'Lunch w/ Sarah', days: [5], allDay: false },
+    { memberId: 'member2', title: 'Hair Appt', days: [20], allDay: false },
     { memberId: 'member3', title: 'Soccer', days: [3, 10, 17, 24], allDay: false },
     { memberId: 'member3', title: 'Piano Lesson', days: [2, 9, 16, 23, 30], allDay: false },
     { memberId: 'member3', title: 'Playdate', days: [6, 14], allDay: false },
     { memberId: 'member3', title: 'School Play', days: [19], allDay: false },
     { memberId: 'family', title: 'Family Dinner', days: [7, 21], allDay: false },
-    { memberId: 'family', title: 'BBQ @ Grandma\'s', days: [13], allDay: true },
+    { memberId: 'family', title: "BBQ @ Grandma's", days: [13], allDay: true },
     { memberId: 'family', title: 'Movie Night', days: [4, 18], allDay: false },
     { memberId: 'family', title: 'Camping Trip', days: [27, 28], allDay: true },
     { memberId: 'family', title: 'Grocery Run', days: [1, 8, 15, 22, 29], allDay: false },

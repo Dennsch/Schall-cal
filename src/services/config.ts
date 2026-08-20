@@ -4,7 +4,8 @@
 export const GOOGLE_CONFIG = {
   apiKey: import.meta.env.VITE_GOOGLE_API_KEY || '',
   clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
-  discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+  // No discoveryDocs — we call the Calendar REST API directly via gapi.client.request()
+  // so the API key only ever hits calendar-json.googleapis.com (which the key allows).
   scopes: 'https://www.googleapis.com/auth/calendar.readonly',
 };
 
