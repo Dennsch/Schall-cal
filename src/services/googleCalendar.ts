@@ -70,7 +70,7 @@ function loadGapiScript(): Promise<void> {
     }
     
     const script = document.createElement('script');
-    script.src = '/gapi.js';
+    script.src = 'https://apis.google.com/js/api.js';//'/gapi.js';
     script.onload = () => {
       if (!window.gapi) {
         reject(new Error('gapi script loaded but window.gapi is undefined'));
