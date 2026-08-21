@@ -61,11 +61,29 @@ export function getSavedLoginHint(): string {
 function loadGapiScript(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (gapiLoaded) { resolve(); return; }
+    
+    // Check if gapi is already loaded (edge case for hot reload)
+    if (typeof window.gapi !== 'undefined' && window.gapi.client) {
+      gapiLoaded = true;
+      resolve();
+      return;
+    }
+    
     const script = document.createElement('script');
     script.src = '/gapi.js';
     script.onload = () => {
+      if (!window.gapi) {
+        reject(new Error('gapi script loaded but window.gapi is undefined'));
+        return;
+      }
       window.gapi.load('client', async () => {
         try {
+          // Double-check that gapi.client is now available
+          if (!window.gapi.client) {
+            reject(new Error('gapi.client is not available after loading'));
+            return;
+          }
+          
           await window.gapi.client.init({ apiKey: GOOGLE_CONFIG.apiKey });
           gapiLoaded = true;
           resolve();
@@ -127,13 +145,24 @@ export function requestAccess(): void {
 // Restore a previously saved token into gapi without any popup
 export function restoreToken(token: string): void {
   window.gapi.client.setToken({ access_token: token });
+  if (!window.gapi || !window.gapi.client) {
+    console.error('Cannot restore token: gapi.client is not available');
+    return;
+  }
 }
 
 export function signOut(): void {
   const token = window.gapi.client.getToken();
+  if (!window.gapi || !window.gapi.client) {
+    console.error('Cannot sign out: gapi.client is not available');
+    clearStoredToken();
+    return;
+  }
   if (token) {
     window.google.accounts.oauth2.revoke(token.access_token);
-    window.gapi.client.setToken(null);
+    if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+      window.google.accounts.oauth2.revoke(token.access_token);
+    }
   }
   clearStoredToken();
 }
@@ -149,6 +178,11 @@ async function fetchCalendarEvents(
   if (!calendarId) return [];
 
   const response = await window.gapi.client.request({
+  if (!window.gapi || !window.gapi.client) {
+    console.error('Cannot fetch events: gapi.client is not available');
+    return [];
+  }
+
     path: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
     params: {
       timeMin: timeMin.toISOString(),
