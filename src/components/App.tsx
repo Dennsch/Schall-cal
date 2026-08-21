@@ -27,7 +27,7 @@ function scrollToToday() {
 
 export default function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { events, loading, error, authState, isDemoMode, signIn } = useCalendar(currentDate);
+  const { events, loading,  authState, isDemoMode} = useCalendar(currentDate);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // ── Theme ──────────────────────────────────────────────────────────
