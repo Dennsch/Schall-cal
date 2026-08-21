@@ -94,8 +94,8 @@ function loadGapiScript(): Promise<void> {
                 gapiLoaded = true;
                 resolve();
               })
-              .catch((err) => {
-                reject(err);
+              .catch((_err: any) => {
+                reject(new Error('bla bla'));
               });
           } else if (attempts < maxAttempts) {
             // Not available yet, try again in 100ms
