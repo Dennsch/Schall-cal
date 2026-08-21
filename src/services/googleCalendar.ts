@@ -58,39 +58,84 @@ export function getSavedLoginHint(): string {
 
 // ── Script loading ─────────────────────────────────────────────────────────
 
+/**
+ * Wait for gapi.client to be available with retries.
+ * The gapi script sometimes takes a moment to fully initialize after load callback fires.
+ */
+function waitForGapiClient(maxAttempts = 10, delayMs = 100): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let attempts = 0;
+    
+    const checkClient = () => {
+      attempts++;
+      
+      if (window.gapi && window.gapi.client) {
+        resolve();
+        return;
+      }
+      
+      if (attempts >= maxAttempts) {
+        reject(new Error(`gapi.client not available after ${maxAttempts} attempts (${maxAttempts * delayMs}ms)`));
+        return;
+      }
+      
+      setTimeout(checkClient, delayMs);
+    };
+    
+    checkClient();
+  });
+}
+
 function loadGapiScript(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (gapiLoaded) { resolve(); return; }
     
     // Check if gapi is already loaded (edge case for hot reload)
-    if (typeof window.gapi !== 'undefined' && window.gapi.client) {
+    if (window.gapi && window.gapi.client) {
       gapiLoaded = true;
       resolve();
       return;
     }
     
+    // If gapi exists but client is not ready, wait for it
+    if (window.gapi) {
+      window.gapi.load('client', async () => {
+        try {
+          await waitForGapiClient();
+          await window.gapi.client.init({ apiKey: GOOGLE_CONFIG.apiKey });
+          gapiLoaded = true;
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+      return;
+    }
+    
     const script = document.createElement('script');
     script.src = '/gapi.js';
+    script.async = true;
+    
     script.onload = () => {
       if (!window.gapi) {
         reject(new Error('gapi script loaded but window.gapi is undefined'));
         return;
       }
+      
       window.gapi.load('client', async () => {
         try {
-          // Double-check that gapi.client is now available
-          if (!window.gapi.client) {
-            reject(new Error('gapi.client is not available after loading'));
-            return;
-          }
-          
+          // Wait for gapi.client to be fully initialized
+          await waitForGapiClient();
           await window.gapi.client.init({ apiKey: GOOGLE_CONFIG.apiKey });
           gapiLoaded = true;
           resolve();
-        } catch (err) { reject(err); }
+        } catch (err) {
+          reject(err);
+        }
       });
     };
-    script.onerror = reject;
+    
+    script.onerror = () => reject(new Error('Failed to load gapi.js script'));
     document.head.appendChild(script);
   });
 }
@@ -100,8 +145,9 @@ function loadGisScript(): Promise<void> {
     if (gisLoaded) { resolve(); return; }
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
     script.onload = () => { gisLoaded = true; resolve(); };
-    script.onerror = reject;
+    script.onerror = () => reject(new Error('Failed to load Google Identity Services script'));
     document.head.appendChild(script);
   });
 }
