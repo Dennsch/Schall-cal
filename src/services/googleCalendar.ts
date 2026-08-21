@@ -76,18 +76,38 @@ function loadGapiScript(): Promise<void> {
         reject(new Error('gapi script loaded but window.gapi is undefined'));
         return;
       }
-      window.gapi.load('client', async () => {
-        try {
-          // Double-check that gapi.client is now available
-          if (!window.gapi.client) {
-            reject(new Error('gapi.client is not available after loading'));
-            return;
-          }
+      
+      // Load the client library
+      window.gapi.load('client', () => {
+        // The custom gapi.js stub may set up gapi.client asynchronously
+        // We need to poll/wait for it to become available
+        const maxAttempts = 50; // 5 seconds max wait
+        let attempts = 0;
+        
+        const checkClientAvailable = () => {
+          attempts++;
           
-          await window.gapi.client.init({ apiKey: GOOGLE_CONFIG.apiKey });
-          gapiLoaded = true;
-          resolve();
-        } catch (err) { reject(err); }
+          if (window.gapi && window.gapi.client) {
+            // gapi.client is now available, initialize it
+            window.gapi.client.init({ apiKey: GOOGLE_CONFIG.apiKey })
+              .then(() => {
+                gapiLoaded = true;
+                resolve();
+              })
+              .catch((err) => {
+                reject(err);
+              });
+          } else if (attempts < maxAttempts) {
+            // Not available yet, try again in 100ms
+            setTimeout(checkClientAvailable, 100);
+          } else {
+            // Timeout - gapi.client never became available
+            reject(new Error('gapi.client is not available after loading (timeout after 5s)'));
+          }
+        };
+        
+        // Start checking immediately
+        checkClientAvailable();
       });
     };
     script.onerror = reject;
@@ -144,22 +164,21 @@ export function requestAccess(): void {
 
 // Restore a previously saved token into gapi without any popup
 export function restoreToken(token: string): void {
-  window.gapi.client.setToken({ access_token: token });
   if (!window.gapi || !window.gapi.client) {
     console.error('Cannot restore token: gapi.client is not available');
     return;
   }
+  window.gapi.client.setToken({ access_token: token });
 }
 
 export function signOut(): void {
-  const token = window.gapi.client.getToken();
   if (!window.gapi || !window.gapi.client) {
     console.error('Cannot sign out: gapi.client is not available');
     clearStoredToken();
     return;
   }
+  const token = window.gapi.client.getToken();
   if (token) {
-    window.google.accounts.oauth2.revoke(token.access_token);
     if (window.google && window.google.accounts && window.google.accounts.oauth2) {
       window.google.accounts.oauth2.revoke(token.access_token);
     }
