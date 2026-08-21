@@ -8,6 +8,7 @@ export const GOOGLE_CONFIG = {
   // so the API key only ever hits calendar-json.googleapis.com (which the key allows).
   scopes: 'https://www.googleapis.com/auth/calendar.readonly',
 };
+export const CALENDAR_API = '/api/calendar';
 
 // Calendar IDs from environment variables
 export const CALENDAR_IDS = {

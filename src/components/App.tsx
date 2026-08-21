@@ -9,7 +9,6 @@ import {
 import { MonthHeader } from './MonthHeader';
 import { CalendarGrid } from './CalendarGrid';
 import { ThemeSwitcher } from './ThemeSwitcher';
-import { SignInOverlay } from './SignInOverlay';
 import { useCalendar } from '../hooks/useCalendar';
 import type { ThemeId } from '../types/theme';
 import { loadTheme, saveTheme, applyTheme } from '../types/theme';
@@ -103,23 +102,6 @@ export default function App() {
         theme={theme}
       />
 
-      {/* Sign-in overlay — shown until Google OAuth completes */}
-      {authState === 'needs-signin' && (
-        <SignInOverlay
-          onSignIn={signIn}
-          error={error}
-          theme={theme}
-        />
-      )}
-
-      {/* Demo mode error banner — tap calendar icon 5× to see debug info */}
-      {isDemoMode && error && (
-        <SignInOverlay
-          onSignIn={() => window.location.reload()}
-          error={error}
-          theme={theme}
-        />
-      )}
 
       {loading && authState === 'authenticated' && (
         <div className="loading-overlay">
