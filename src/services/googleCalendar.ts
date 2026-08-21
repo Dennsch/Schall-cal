@@ -236,6 +236,12 @@ async function fetchCalendarEvents(
     },
   });
 
+  // Validate response.result exists before accessing its properties
+  if (!response.result) {
+    console.error(`Invalid API response for calendar ${calendarId}:`, response);
+    throw new Error(`Invalid API response: result is undefined for calendar ${calendarId}`);
+  }
+  
   const items = response.result.items || [];
   return items.map((item: any) => ({
     id: item.id || crypto.randomUUID(),
