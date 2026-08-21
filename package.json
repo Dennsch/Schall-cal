@@ -23,6 +23,7 @@
     "@capacitor/status-bar": "^8.0.3",
     "@types/gapi": "^0.0.47",
     "@types/gapi.client.calendar-v3": "^0.0.4",
+    "@vercel/node": "^5.10.2",
     "date-fns": "^4.4.0",
     "googleapis": "^176.0.0",
     "react": "^19.2.8",
