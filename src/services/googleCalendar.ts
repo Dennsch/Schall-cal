@@ -94,7 +94,7 @@ function loadGapiScript(): Promise<void> {
                 gapiLoaded = true;
                 resolve();
               })
-              .catch((err as  any) => {
+              .catch((err) => {
                 reject(err);
               });
           } else if (attempts < maxAttempts) {
