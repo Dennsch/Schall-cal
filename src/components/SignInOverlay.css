@@ -94,7 +94,23 @@
   margin: 0;
 }
 
-/* Theme overrides */
+.signin-debug {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.signin-debug p {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--app-color, #3E2723);
+  opacity: 0.8;
+  margin: 2px 0;
+  word-break: break-all;
+}
 [data-theme="sleek"] .signin-card {
   background: #1E293B;
   box-shadow: 0 8px 40px rgba(0,0,0,0.4);

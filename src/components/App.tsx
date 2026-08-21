@@ -112,6 +112,15 @@ export default function App() {
         />
       )}
 
+      {/* Demo mode error banner — tap calendar icon 5× to see debug info */}
+      {isDemoMode && error && (
+        <SignInOverlay
+          onSignIn={() => window.location.reload()}
+          error={error}
+          theme={theme}
+        />
+      )}
+
       {loading && authState === 'authenticated' && (
         <div className="loading-overlay">
           <div className="loading-spinner" />

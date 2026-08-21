@@ -5,25 +5,25 @@ const config: CapacitorConfig = {
   appName: 'Schall Calendar',
   webDir: 'dist',
 
-  // SM-T350 is 1024x768 landscape, Android 5.1.1
   android: {
-    // Keep screen on — the tablet is a wall display
     allowMixedContent: true,
     backgroundColor: '#FDF6EC',
+    // Use https://localhost so Google OAuth accepts it as an authorised origin
+    // (add https://localhost to your OAuth client's authorised JS origins)
+    webContentsDebuggingEnabled: false,
   },
 
   plugins: {
     StatusBar: {
-      // Hide status bar for full-screen calendar display
       style: 'DARK',
       backgroundColor: '#FDF6EC',
     },
   },
 
   server: {
-    // For development only — remove for production
-    // url: 'http://YOUR_DEV_IP:5173',
-    cleartext: true,
+    // Load the live Vercel deployment — updates deploy instantly, no APK reinstall needed
+    url: 'https://schall-cal.vercel.app',
+    cleartext: false,
   },
 };
 

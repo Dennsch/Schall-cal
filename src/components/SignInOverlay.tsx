@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { ThemeId } from '../types/theme';
+import { GOOGLE_CONFIG } from '../services/config';
 import './SignInOverlay.css';
 
 interface SignInOverlayProps {
@@ -8,10 +10,13 @@ interface SignInOverlayProps {
 }
 
 export function SignInOverlay({ onSignIn, error, theme }: SignInOverlayProps) {
+  const [tapCount, setTapCount] = useState(0);
+  const showDebug = tapCount >= 5;
+
   return (
     <div className={`signin-overlay theme-${theme}`}>
       <div className="signin-card">
-        <div className="signin-icon">📅</div>
+        <div className="signin-icon" onClick={() => setTapCount(n => n + 1)}>📅</div>
         <h2 className="signin-title">Schall Family Calendar</h2>
         <p className="signin-subtitle">
           Connect your Google Calendar to get started
@@ -35,6 +40,15 @@ export function SignInOverlay({ onSignIn, error, theme }: SignInOverlayProps) {
         <p className="signin-note">
           You'll only need to do this once per session
         </p>
+        {showDebug && (
+          <div className="signin-debug">
+            <p>API key: {GOOGLE_CONFIG.apiKey ? `✓ ${GOOGLE_CONFIG.apiKey.slice(0, 8)}…` : '✗ missing'}</p>
+            <p>Client ID: {GOOGLE_CONFIG.clientId ? `✓ ${GOOGLE_CONFIG.clientId.slice(0, 12)}…` : '✗ missing'}</p>
+            <p>gapi: {typeof window.gapi !== 'undefined' ? '✓ loaded' : '✗ not loaded'}</p>
+            <p>google: {typeof window.google !== 'undefined' ? '✓ loaded' : '✗ not loaded'}</p>
+            <p>UA: {navigator.userAgent.slice(0, 60)}</p>
+          </div>
+        )}
       </div>
     </div>
   );

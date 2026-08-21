@@ -77,6 +77,7 @@ export function useCalendar(currentDate: Date): UseCalendarReturn {
         console.error('Failed to init Google API:', err);
         setIsDemoMode(true);
         setEvents(generateDemoEvents(currentDate));
+        setError(`API init failed: ${err?.message || String(err)}`);
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
