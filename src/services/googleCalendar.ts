@@ -67,19 +67,19 @@ function waitForGapiClient(maxAttempts = 10, delayMs = 100): Promise<void> {
     let attempts = 0;
     
     const checkClient = () => {
-      attempts++;
-      
       if (window.gapi && window.gapi.client) {
         resolve();
         return;
       }
       
+      attempts++;
       if (attempts >= maxAttempts) {
         reject(new Error(`gapi.client not available after ${maxAttempts} attempts (${maxAttempts * delayMs}ms)`));
         return;
       }
       
       setTimeout(checkClient, delayMs);
+    };
     };
     
     checkClient();
