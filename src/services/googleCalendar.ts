@@ -80,7 +80,6 @@ function waitForGapiClient(maxAttempts = 10, delayMs = 100): Promise<void> {
       
       setTimeout(checkClient, delayMs);
     };
-    };
     
     checkClient();
   });
