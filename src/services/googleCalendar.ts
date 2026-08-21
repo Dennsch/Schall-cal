@@ -102,6 +102,7 @@ function loadGapiScript(): Promise<void> {
         try {
           await waitForGapiClient();
           await window.gapi.client.init({ apiKey: GOOGLE_CONFIG.apiKey });
+          await window.gapi.client.load('calendar', 'v3');
           gapiLoaded = true;
           resolve();
         } catch (err) {
@@ -126,6 +127,7 @@ function loadGapiScript(): Promise<void> {
           // Wait for gapi.client to be fully initialized
           await waitForGapiClient();
           await window.gapi.client.init({ apiKey: GOOGLE_CONFIG.apiKey });
+          await window.gapi.client.load('calendar', 'v3');
           gapiLoaded = true;
           resolve();
         } catch (err) {
@@ -225,15 +227,14 @@ async function fetchCalendarEvents(
     console.error('Cannot fetch events: gapi.client is not available');
     return [];
   }
-  const response = await window.gapi.client.request({
-    path: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
-    params: {
-      timeMin: timeMin.toISOString(),
-      timeMax: timeMax.toISOString(),
-      singleEvents: true,
-      orderBy: 'startTime',
-      maxResults: 250,
-    },
+  
+  const response = await window.gapi.client.calendar.events.list({
+    calendarId: calendarId,
+    timeMin: timeMin.toISOString(),
+    timeMax: timeMax.toISOString(),
+    singleEvents: true,
+    orderBy: 'startTime',
+    maxResults: 250,
   });
 
   // Validate response.result exists before accessing its properties
