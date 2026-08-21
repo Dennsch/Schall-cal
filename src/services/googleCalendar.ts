@@ -176,13 +176,11 @@ async function fetchCalendarEvents(
   timeMax: Date
 ): Promise<CalendarEvent[]> {
   if (!calendarId) return [];
-
-  const response = await window.gapi.client.request({
-  if (!window.gapi || !window.gapi.client) {
+ if (!window.gapi || !window.gapi.client) {
     console.error('Cannot fetch events: gapi.client is not available');
     return [];
   }
-
+  const response = await window.gapi.client.request({
     path: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
     params: {
       timeMin: timeMin.toISOString(),
