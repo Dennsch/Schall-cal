@@ -62,7 +62,7 @@ function loadGapiScript(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (gapiLoaded) { resolve(); return; }
     const script = document.createElement('script');
-    script.src = 'https://apis.google.com/js/api.js';
+    script.src = '/gapi.js';
     script.onload = () => {
       window.gapi.load('client', async () => {
         try {
