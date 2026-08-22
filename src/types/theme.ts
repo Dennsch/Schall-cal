@@ -1,4 +1,4 @@
-export type ThemeId = 'classic' | 'sleek' | 'muted' | 'playful';
+export type ThemeId = 'classic' | 'sleek' | 'muted' | 'light';
 
 export interface ThemeMeta {
   id: ThemeId;
@@ -27,10 +27,10 @@ export const THEMES: ThemeMeta[] = [
     description: 'Soft desaturated pastels',
   },
   {
-    id: 'playful',
-    label: 'Playful',
-    swatch: '#FF4F9B',
-    description: 'Bold & bouncy fun',
+    id: 'light',
+    label: 'Light',
+    swatch: '#F8FAFC',
+    description: 'Minimalist light slate',
   },
 ];
 
