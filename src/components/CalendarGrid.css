@@ -434,106 +434,114 @@
 
 
 /* ═══════════════════════════════════════════════════════════
-   THEME: PLAYFUL
+   THEME: LIGHT
+   Light counterpart to sleek — white bg, hairline borders,
+   left-border chips, Inter font
    ═══════════════════════════════════════════════════════════ */
 
-.calendar-grid.theme-playful .grid-header {
-  background: #fff;
-  border-bottom: 4px solid #F0E6FF;
+.calendar-grid.theme-light .grid-header {
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
   padding: 8px 0;
 }
 
-.calendar-grid.theme-playful .header-date-col {
-  color: #A78BFA;
-  font-family: 'Fredoka One', cursive;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-  font-weight: 400;
-  text-transform: none;
+.calendar-grid.theme-light .header-date-col {
+  color: #94A3B8;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 1.5px;
 }
 
-.calendar-grid.theme-playful .header-member-col { border-left: 2px solid #F0E6FF; }
-
-.calendar-grid.theme-playful .member-name {
-  font-family: 'Fredoka One', cursive;
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  filter: brightness(0.95) saturate(1.1);
-}
-.calendar-grid.theme-playful .member-emoji { font-size: 20px; }
-
-.calendar-grid.theme-playful .grid-body { scrollbar-color: #D8B4FE transparent; }
-.calendar-grid.theme-playful .grid-body::-webkit-scrollbar-thumb {
-  background: #D8B4FE;
-  border-radius: 4px;
+.calendar-grid.theme-light .header-member-col {
+  border-left: 1px solid #E2E8F0;
 }
 
-.calendar-grid.theme-playful .grid-row {
-  border-bottom: 2px solid #F3E8FF;
-  min-height: 46px;
+.calendar-grid.theme-light .member-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  color: var(--member-color);
+  filter: brightness(0.85) saturate(0.85);
 }
 
-.calendar-grid.theme-playful .grid-row:nth-child(odd)          { background: #FFFBF0; }
-.calendar-grid.theme-playful .grid-row:nth-child(even)         { background: #FDF4FF; }
-.calendar-grid.theme-playful .grid-row.weekend                 { background: #FFF0F6; }
-.calendar-grid.theme-playful .grid-row.weekend:nth-child(even) { background: #FFE8F5; }
+.calendar-grid.theme-light .member-emoji { display: none; }
 
-.calendar-grid.theme-playful .grid-row.today {
-  background: linear-gradient(90deg, #FFF0C2, #FFF9E0) !important;
-  border-top: 3px dashed #FBBF24;
-  border-bottom: 3px dashed #FBBF24;
+.calendar-grid.theme-light .grid-body {
+  scrollbar-color: #CBD5E1 transparent;
 }
-.calendar-grid.theme-playful .grid-row.today::before {
-  content: '⭐';
-  font-size: 15px;
-  color: #FBBF24;
-  left: 1px;
-  top: 50%;
-  transform: translateY(-50%);
-  text-shadow: none;
+.calendar-grid.theme-light .grid-body::-webkit-scrollbar-thumb { background: #CBD5E1; }
+
+.calendar-grid.theme-light .grid-row {
+  border-bottom: 1px solid #EDF1F5;
+  min-height: 42px;
 }
 
-.calendar-grid.theme-playful .date-number {
-  color: #7C3AED;
-  font-family: 'Fredoka One', cursive;
-  font-size: 26px;
-  font-weight: 400;
-  width: 32px;
-}
-.calendar-grid.theme-playful .date-day-name {
-  color: #A78BFA;
-  font-family: 'Fredoka One', cursive;
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 0.3px;
+.calendar-grid.theme-light .grid-row:nth-child(odd)          { background: #FFFFFF; }
+.calendar-grid.theme-light .grid-row:nth-child(even)         { background: #F8FAFC; }
+.calendar-grid.theme-light .grid-row.weekend                 { background: #F1F5F9; }
+.calendar-grid.theme-light .grid-row.weekend:nth-child(even) { background: #F1F5F9; }
+
+.calendar-grid.theme-light .grid-row.today {
+  background: #E0F2FE !important;
+  border-top: 1px solid #0284C7;
+  border-bottom: 1px solid #0284C7;
 }
 
-.calendar-grid.theme-playful .grid-row.weekend .date-number   { color: #EC4899; }
-.calendar-grid.theme-playful .grid-row.weekend .date-day-name { color: #F472B6; }
-.calendar-grid.theme-playful .grid-row.today .date-number     { color: #D97706; }
-.calendar-grid.theme-playful .grid-row.today .date-day-name   { color: #D97706; }
+.calendar-grid.theme-light .grid-row.today::before {
+  content: '';
+  width: 3px;
+  height: 100%;
+  background: #0284C7;
+  top: 0;
+  left: 0;
+  transform: none;
+  font-size: 0;
+}
 
-.calendar-grid.theme-playful .row-member-col { border-left: 2px solid #F3E8FF; }
+.calendar-grid.theme-light .date-number {
+  color: #334155;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: 21px;
+}
 
-.calendar-grid.theme-playful .event-chip {
-  background: var(--chip-color);
-  border-radius: 14px;
-  padding: 2px 9px;
-  font-size: 11.5px;
-  font-family: 'Fredoka One', cursive;
-  font-weight: 400;
-  letter-spacing: 0.3px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15), 0 0 0 2px rgba(255,255,255,0.6) inset;
+.calendar-grid.theme-light .date-day-name {
+  color: #94A3B8;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.calendar-grid.theme-light .grid-row.weekend .date-number   { color: #64748B; }
+.calendar-grid.theme-light .grid-row.weekend .date-day-name { color: #64748B; }
+.calendar-grid.theme-light .grid-row.today .date-number     { color: #0284C7; }
+.calendar-grid.theme-light .grid-row.today .date-day-name   { color: #0284C7; }
+
+.calendar-grid.theme-light .row-member-col { border-left: 1px solid #E2E8F0; }
+
+/* Light chips: left-border accent like sleek but with dark text on light bg */
+.calendar-grid.theme-light .event-chip {
+  background: rgba(var(--chip-color-rgb), 0.08);
+  color: #1E293B;
+  border-left: 2px solid var(--chip-color);
+  border-radius: 0 3px 3px 0;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  box-shadow: none;
   opacity: 1;
 }
-.calendar-grid.theme-playful .event-chip.all-day {
-  background: white;
-  color: var(--chip-color);
-  border: 2.5px solid var(--chip-color);
-  box-shadow: none;
+
+.calendar-grid.theme-light .event-chip.all-day {
+  opacity: 0.7;
+  border-left-style: dashed;
 }
 
-.calendar-grid.theme-playful .portrait-subrow--bottom {
-  border-top-color: rgba(240, 232, 255, 0.8);
+.calendar-grid.theme-light .portrait-subrow--bottom {
+  border-top-color: rgba(226, 232, 240, 0.9);
 }

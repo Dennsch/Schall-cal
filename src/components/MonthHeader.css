@@ -1,8 +1,8 @@
 /*
  * MonthHeader.css
  * Base styles + per-theme overrides.
- * Classic + Playful use JS-injected gradient backgrounds from MONTH_THEMES.
- * Sleek + Muted override completely via .theme-sleek / .theme-muted classes.
+ * Classic + Muted use JS-injected gradient backgrounds from MONTH_THEMES.
+ * Sleek + Light override completely via .theme-sleek / .theme-light classes.
  */
 
 /* ─── Base ─── */
@@ -224,69 +224,66 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   THEME: PLAYFUL
-   Big bold gradient header, Fredoka font, bouncy decos
+   THEME: LIGHT
+   Light counterpart to sleek — white header, hairline divider,
+   Inter font, no decorations
    ═══════════════════════════════════════════════════════════ */
-.month-header.theme-playful {
-  padding: 10px 12px 8px;
-  border-bottom: 4px solid rgba(255,255,255,0.25);
+.month-header.theme-light {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 10px 16px 8px;
 }
 
-.month-header.theme-playful .month-name {
-  font-family: 'Fredoka One', cursive;
-  font-size: 34px !important;
-  letter-spacing: 3px;
-  text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+.month-header.theme-light::after { display: none; }
+
+.month-header.theme-light .nav-btn {
+  background: #F1F5F9;
+  border-color: #E2E8F0;
+  color: #64748B;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 11px;
 }
 
-.month-header.theme-playful .month-year {
-  font-family: 'Fredoka One', cursive;
-  font-size: 20px;
-  opacity: 0.85;
+.month-header.theme-light .nav-btn:active {
+  background: #E2E8F0;
 }
 
-.month-header.theme-playful .deco-left,
-.month-header.theme-playful .deco-right {
-  font-size: 30px;
-  animation: bounce 0.8s ease-in-out infinite alternate;
+.month-header.theme-light .month-name {
+  color: #0F172A !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: 26px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  text-shadow: none;
 }
 
-.month-header.theme-playful .deco-right {
-  animation-delay: 0.4s;
+.month-header.theme-light .month-year {
+  color: #94A3B8 !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 2px;
 }
 
-@keyframes bounce {
-  from { transform: translateY(0) rotate(-5deg) scale(1); }
-  to   { transform: translateY(-6px) rotate(5deg) scale(1.1); }
-}
-
-.month-header.theme-playful .nav-btn {
-  background: rgba(255, 255, 255, 0.3);
-  border: 3px solid rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  color: white;
-  font-size: 16px;
-  width: 40px;
-  height: 40px;
-}
-
-.month-header.theme-playful .nav-btn:active {
-  background: rgba(255, 255, 255, 0.5);
-  transform: scale(0.85) rotate(-3deg);
-}
-
-.month-header.theme-playful .today-btn {
-  background: rgba(255, 255, 255, 0.3) !important;
-  border: 2px solid rgba(255,255,255,0.7) !important;
-  color: white !important;
-  border-radius: 20px;
-  font-family: 'Fredoka One', cursive;
-  font-size: 13px;
+.month-header.theme-light .today-btn {
+  background: transparent;
+  border-color: #CBD5E1 !important;
+  color: #64748B !important;
+  border-radius: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
   letter-spacing: 1px;
-  padding: 3px 18px;
 }
 
-.month-header.theme-playful .demo-badge {
-  color: rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.2);
+.month-header.theme-light .today-btn:active {
+  background: #F1F5F9;
+  color: #334155 !important;
+}
+
+.month-header.theme-light .demo-badge {
+  background: #F1F5F9;
+  color: #64748B;
 }

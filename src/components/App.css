@@ -2,13 +2,12 @@
  * App.css — Global layout + CSS custom properties for theming
  *
  * Supports both landscape (1024×768) and portrait (768×1024) on SM-T350.
- * Theme is applied via [data-theme="classic|sleek|muted|playful"] on <html>.
+ * Theme is applied via [data-theme="classic|sleek|muted|light"] on <html>.
  */
 
 /* ─── Font imports ─── */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
 /* ─── Reset ─── */
 *, *::before, *::after {
@@ -60,13 +59,13 @@ body {
   --loading-color: #8B9BAA;
 }
 
-/* ─── Theme: Playful (bold & bouncy) ─── */
-[data-theme="playful"] {
-  --app-bg:        #FFFBF0;
-  --app-color:     #2D2A3E;
-  --app-font:      'Fredoka One', 'Nunito', cursive, sans-serif;
-  --header-border: 4px solid rgba(0,0,0,0.08);
-  --loading-color: #FF4F9B;
+/* ─── Theme: Light (minimalist light slate — light counterpart to sleek) ─── */
+[data-theme="light"] {
+  --app-bg:        #F8FAFC;
+  --app-color:     #0F172A;
+  --app-font:      'Inter', system-ui, sans-serif;
+  --header-border: 1px solid #E2E8F0;
+  --loading-color: #0284C7;
 }
 
 /* ─── App Container ─── */

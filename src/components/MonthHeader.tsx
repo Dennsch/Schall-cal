@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import type { ThemeId } from '../types/theme';
 import './MonthHeader.css';
 
-// Per-month themes — used by classic + muted; sleek and playful override these entirely
+// Per-month themes — used by classic + muted; sleek and light override these entirely
 const MONTH_THEMES: Record<number, { bg: string; accent: string; deco: string }> = {
   0:  { bg: 'linear-gradient(135deg, #E8F4FD 0%, #B8DFF5 100%)', accent: '#3B82C4', deco: '❄️ ⛷️ ☃️' },
   1:  { bg: 'linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%)', accent: '#E91E63', deco: '💝 🌹 💕' },
@@ -16,22 +16,6 @@ const MONTH_THEMES: Record<number, { bg: string; accent: string; deco: string }>
   9:  { bg: 'linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%)', accent: '#E65100', deco: '🎃 🍁 👻' },
   10: { bg: 'linear-gradient(135deg, #EFEBE9 0%, #BCAAA4 100%)', accent: '#5D4037', deco: '🦃 🍽️ 🍂' },
   11: { bg: 'linear-gradient(135deg, #ECEFF1 0%, #B0BEC5 100%)', accent: '#37474F', deco: '🎄 🎁 ⭐' },
-};
-
-// Playful theme has its own bold monthly palette
-const PLAYFUL_THEMES: Record<number, { bg: string; accent: string; deco: string }> = {
-  0:  { bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', accent: '#fff', deco: '⛄ 🎿 ✨' },
-  1:  { bg: 'linear-gradient(135deg, #f953c6 0%, #b91d73 100%)', accent: '#fff', deco: '💖 🍫 🌹' },
-  2:  { bg: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', accent: '#fff', deco: '🌸 🐣 🍀' },
-  3:  { bg: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)', accent: '#fff', deco: '🌷 🐝 🌈' },
-  4:  { bg: 'linear-gradient(135deg, #c94b4b 0%, #4b134f 100%)', accent: '#fff', deco: '🦋 🌸 🎀' },
-  5:  { bg: 'linear-gradient(135deg, #f12711 0%, #f5af19 100%)', accent: '#fff', deco: '🌞 🏖️ 🍦' },
-  6:  { bg: 'linear-gradient(135deg, #1a6eff 0%, #00c6ff 100%)', accent: '#fff', deco: '🎆 🎇 🧨' },
-  7:  { bg: 'linear-gradient(135deg, #f7971e 0%, #ff5f6d 100%)', accent: '#fff', deco: '🌻 🏕️ 🌟' },
-  8:  { bg: 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 100%)', accent: '#fff', deco: '🍎 🎒 📚' },
-  9:  { bg: 'linear-gradient(135deg, #e55d87 0%, #5fc3e4 100%)', accent: '#fff', deco: '🎃 🦇 🕷️' },
-  10: { bg: 'linear-gradient(135deg, #c94b4b 0%, #4b134f 100%)', accent: '#fff', deco: '🦃 🍁 🍂' },
-  11: { bg: 'linear-gradient(135deg, #1a2980 0%, #26d0ce 100%)', accent: '#fff', deco: '🎄 ⭐ 🎁' },
 };
 
 interface MonthHeaderProps {
@@ -57,29 +41,15 @@ export function MonthHeader({
   const monthName = format(currentDate, 'MMMM');
   const year = format(currentDate, 'yyyy');
 
-  // Sleek and muted themes ignore the monthly gradient — CSS handles their styling
+  // Sleek and light themes ignore the monthly gradient — CSS handles their styling
   const useMonthGradient = theme === 'classic' || theme === 'muted';
-  const usePlayfulGradient = theme === 'playful';
   const classicTheme = MONTH_THEMES[month];
-  const playfulTheme = PLAYFUL_THEMES[month];
 
-  const headerStyle =
-    useMonthGradient
-      ? { background: classicTheme.bg }
-      : usePlayfulGradient
-        ? { background: playfulTheme.bg }
-        : undefined;
+  const headerStyle = useMonthGradient ? { background: classicTheme.bg } : undefined;
+  const accentStyle = useMonthGradient ? { color: classicTheme.accent } : undefined;
 
-  const accentStyle =
-    useMonthGradient
-      ? { color: classicTheme.accent }
-      : usePlayfulGradient
-        ? { color: playfulTheme.accent }
-        : undefined;
-
-  const showDeco = theme === 'classic' || theme === 'playful';
-  const deco = theme === 'playful' ? playfulTheme.deco : classicTheme.deco;
-  const decoItems = deco.split(' ');
+  const showDeco = theme === 'classic';
+  const decoItems = classicTheme.deco.split(' ');
 
   return (
     <header className={`month-header theme-${theme}`} style={headerStyle}>
