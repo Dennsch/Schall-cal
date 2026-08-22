@@ -14,6 +14,8 @@ export interface CalendarEvent {
   allDay: boolean;
   memberId: string; // which family member this belongs to
   color?: string;
+  description?: string;
+  location?: string;
 }
 
 export interface DayEvents {

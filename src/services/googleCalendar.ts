@@ -21,5 +21,7 @@ export async function fetchAllEvents(
     allDay: item.allDay,
     memberId: item.memberId,
     color: item.color,
+    description: item.description,
+    location: item.location,
   }));
 }
