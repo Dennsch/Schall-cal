@@ -1,8 +1,14 @@
+import dennisImg from '../images/dennis.png';
+import angelaImg from '../images/Angela.png';
+import taronImg from '../images/Taron.png';
+import familyImg from '../images/family.png';
+
 export interface FamilyMember {
   id: string;
   name: string;
   color: string;
   emoji: string;
+  image: string;
   calendarId: string; // Google Calendar ID
 }
 
@@ -29,6 +35,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
     name: 'Dennis',
     color: '#4A90D9',
     emoji: '👨',
+    image: dennisImg,
     calendarId: '', // Set in .env
   },
   {
@@ -36,6 +43,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
     name: 'Angela',
     color: '#E8636F',
     emoji: '👩',
+    image: angelaImg,
     calendarId: '',
   },
   {
@@ -43,6 +51,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
     name: 'Taron',
     color: '#5EC269',
     emoji: '🧒',
+    image: taronImg,
     calendarId: '',
   },
   {
@@ -50,6 +59,7 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
     name: 'Family',
     color: '#F5A623',
     emoji: '🏠',
+    image: familyImg,
     calendarId: '',
   },
 ];

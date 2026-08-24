@@ -56,7 +56,14 @@
   border-left: 2px solid rgba(232, 165, 75, 0.25);
 }
 
-.member-emoji { font-size: 18px; line-height: 1; }
+.member-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  -webkit-user-drag: none;
+}
 
 .member-name {
   font-weight: 800;
@@ -251,7 +258,7 @@
 .calendar-grid.portrait .date-day-name  { font-size: 14px; }
 .calendar-grid.portrait .event-chip     { font-size: 12px; padding: 2px 8px; }
 .calendar-grid.portrait .member-name    { font-size: 15px; }
-.calendar-grid.portrait .member-emoji  { font-size: 20px; }
+.calendar-grid.portrait .member-avatar { width: 30px; height: 30px; }
 
 /* portrait today indicator — arrow aligns to top sub-row centre */
 .calendar-grid.portrait .grid-row.today::before {
@@ -339,7 +346,7 @@
 /* Large serif date numbers with small muted day abbrev */
 .calendar-grid.theme-sleek .date-number {
   color: #2E2C24;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Inter, 'Times New Roman', serif;
   font-weight: 400;
   font-size: 27px;
 }
