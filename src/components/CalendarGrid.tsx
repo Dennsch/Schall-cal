@@ -1,8 +1,9 @@
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 import { format, isToday, isWeekend } from 'date-fns';
 import type { CalendarEvent } from '../types/calendar';
 import type { ThemeId } from '../types/theme';
 import { FAMILY_MEMBERS } from '../types/calendar';
+import { EventPopover } from './EventPopover';
 import './CalendarGrid.css';
 
 interface CalendarGridProps {
@@ -27,6 +28,15 @@ function useIsPortrait() {
 
 export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps) {
   const isPortrait = useIsPortrait();
+
+  // Popover state: the selected event + which member it belongs to
+  const [selected, setSelected] = useState<{ event: CalendarEvent; color: string } | null>(null);
+
+  const openPopover = useCallback((event: CalendarEvent, color: string) => {
+    setSelected({ event, color });
+  }, []);
+
+  const closePopover = useCallback(() => setSelected(null), []);
 
   const eventMap = useMemo(() => {
     const map = new Map<string, Map<string, CalendarEvent[]>>();
@@ -126,7 +136,7 @@ export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps
                       role="gridcell"
                     >
                       {(dayEvents?.get(member.id) || []).map((event) => (
-                        <EventChip key={event.id} event={event} color={member.color} theme={theme} />
+                        <EventChip key={event.id} event={event} color={member.color} theme={theme} onOpen={openPopover} />
                       ))}
                     </div>
                   ))}
@@ -142,7 +152,7 @@ export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps
                       role="gridcell"
                     >
                       {(dayEvents?.get(member.id) || []).map((event) => (
-                        <EventChip key={event.id} event={event} color={member.color} theme={theme} />
+                        <EventChip key={event.id} event={event} color={member.color} theme={theme} onOpen={openPopover} />
                       ))}
                     </div>
                   ))}
@@ -165,7 +175,7 @@ export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps
                   role="gridcell"
                 >
                   {(dayEvents?.get(member.id) || []).map((event) => (
-                    <EventChip key={event.id} event={event} color={member.color} theme={theme} />
+                    <EventChip key={event.id} event={event} color={member.color} theme={theme} onOpen={openPopover} />
                   ))}
                 </div>
               ))}
@@ -173,6 +183,18 @@ export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps
           );
         })}
       </div>
+
+      {/* Event details popover */}
+      {selected && (
+        <EventPopover
+          event={selected.event}
+          color={selected.color}
+          memberName={
+            FAMILY_MEMBERS.find((m) => m.id === selected.event.memberId)?.name ?? ''
+          }
+          onClose={closePopover}
+        />
+      )}
     </div>
   );
 }
@@ -181,13 +203,16 @@ function EventChip({
   event,
   color,
   theme,
+  onOpen,
 }: {
   event: CalendarEvent;
   color: string;
   theme: ThemeId;
+  onOpen: (event: CalendarEvent, color: string) => void;
 }) {
   const chipClass = [
     'event-chip',
+    'clickable',
     event.allDay ? 'all-day' : '',
     `chip-${theme}`,
   ]
@@ -195,12 +220,14 @@ function EventChip({
     .join(' ');
 
   return (
-    <div
+    <button
+      type="button"
       className={chipClass}
       style={{ '--chip-color': color } as React.CSSProperties}
-      title={`${event.title}${event.allDay ? ' (All Day)' : ''}`}
+      onClick={() => onOpen(event, color)}
+      aria-label={`${event.title} — show details`}
     >
       <span className="event-title">{event.title}</span>
-    </div>
+    </button>
   );
 }

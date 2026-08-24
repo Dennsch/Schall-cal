@@ -72,6 +72,8 @@ export default async function handler(
           allDay: !item.start?.dateTime,
           memberId,
           color: item.colorId,
+          description: item.description || undefined,
+          location: item.location || undefined,
         }));
       }),
     );
