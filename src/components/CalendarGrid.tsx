@@ -74,7 +74,7 @@ export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps
               className="header-member-col"
               style={{ '--member-color': member.color } as React.CSSProperties}
             >
-              <span className="member-emoji">{member.emoji}</span>
+              <img className="member-avatar" src={member.image} alt="" draggable={false} />
               <span className="member-name">{member.name}</span>
             </div>
           ))}
@@ -86,7 +86,7 @@ export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps
               className="header-member-col header-member-col--sub"
               style={{ '--member-color': member.color } as React.CSSProperties}
             >
-              <span className="member-emoji">{member.emoji}</span>
+              <img className="member-avatar" src={member.image} alt="" draggable={false} />
               <span className="member-name">{member.name}</span>
             </div>
           ))}
@@ -103,7 +103,7 @@ export function CalendarGrid({ days, events, loading, theme }: CalendarGridProps
               className="header-member-col"
               style={{ '--member-color': member.color } as React.CSSProperties}
             >
-              <span className="member-emoji">{member.emoji}</span>
+              <img className="member-avatar" src={member.image} alt="" draggable={false} />
               <span className="member-name">{member.name}</span>
             </div>
           ))}

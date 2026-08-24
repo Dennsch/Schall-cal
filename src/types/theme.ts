@@ -17,8 +17,8 @@ export const THEMES: ThemeMeta[] = [
   {
     id: 'sleek',
     label: 'Sleek',
-    swatch: '#1E293B',
-    description: 'Minimalist dark slate',
+    swatch: '#F0EDE2',
+    description: 'Warm cream editorial serif',
   },
   {
     id: 'muted',

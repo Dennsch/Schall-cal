@@ -136,66 +136,69 @@
 
 /* ═══════════════════════════════════════════════════════════
    THEME: SLEEK
-   Dark slate header, sharp divider, no decorations, Inter font
+   Warm cream editorial — serif title, circular grey nav buttons,
+   pill TODAY button, no decorations
    ═══════════════════════════════════════════════════════════ */
 .month-header.theme-sleek {
-  background: #0F172A !important;
-  border-bottom: 1px solid #334155;
+  background: #F3EFE5 !important;
+  border-bottom: 1px solid #E7E2D4;
   padding: 10px 16px 8px;
 }
 
 .month-header.theme-sleek::after { display: none; }
 
 .month-header.theme-sleek .nav-btn {
-  background: #1E293B;
-  border-color: #334155;
-  color: #94A3B8;
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
-  font-size: 11px;
+  background: #E9E4D8;
+  border: none;
+  color: #4A473C;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
 }
 
 .month-header.theme-sleek .nav-btn:active {
-  background: #334155;
+  background: #DDD7C7;
 }
 
 .month-header.theme-sleek .month-name {
-  color: #F8FAFC !important;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 300;
-  font-size: 26px;
-  letter-spacing: 6px;
+  color: #2B2922 !important;
+  font-family: Inter, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: 3px;
   text-transform: uppercase;
   text-shadow: none;
 }
 
 .month-header.theme-sleek .month-year {
-  color: #64748B !important;
-  font-family: 'Inter', system-ui, sans-serif;
+  color: #2B2922 !important;
+  font-family: Inter, 'Times New Roman', serif;
   font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 2px;
+  font-size: 26px;
+  letter-spacing: 3px;
 }
 
 .month-header.theme-sleek .today-btn {
-  background: transparent;
-  border-color: #334155 !important;
-  color: #64748B !important;
-  border-radius: 6px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 500;
-  letter-spacing: 1px;
+  background: #FDFCF8;
+  border-color: #D8D2C2 !important;
+  color: #4A473C !important;
+  border-radius: 16px;
+  font-family: Inter, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 3px 18px;
 }
 
 .month-header.theme-sleek .today-btn:active {
-  background: #1E293B;
-  color: #94A3B8 !important;
+  background: #EFEBDF;
+  color: #2B2922 !important;
 }
 
 .month-header.theme-sleek .demo-badge {
-  background: #1E293B;
-  color: #64748B;
+  background: #E9E4D8;
+  color: #6B675A;
 }
 
 /* ═══════════════════════════════════════════════════════════

@@ -112,27 +112,19 @@
   word-break: break-all;
 }
 [data-theme="sleek"] .signin-card {
-  background: #1E293B;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  background: #FDFCF8;
+  border: 1px solid #E7E2D4;
+  box-shadow: 0 8px 40px rgba(60, 55, 40, 0.12);
 }
 
 [data-theme="sleek"] .signin-btn {
-  background: #0F172A;
-  border-color: #334155;
-  color: #E2E8F0;
+  background: #FDFCF8;
+  border-color: #D8D2C2;
+  color: #2E2C24;
+  font-family: Georgia, 'Times New Roman', serif;
 }
 
 [data-theme="sleek"] .signin-error {
-  background: rgba(198, 40, 40, 0.15);
-  color: #FCA5A5;
-}
-
-[data-theme="playful"] .signin-card {
-  border: 3px solid #F0E6FF;
-  box-shadow: 0 8px 40px rgba(167, 139, 250, 0.2);
-}
-
-[data-theme="playful"] .signin-btn {
-  border-color: #D8B4FE;
-  border-width: 3px;
+  background: #F7E8E4;
+  color: #A0522D;
 }
