@@ -8,10 +8,7 @@ import {
 } from 'date-fns';
 import { MonthHeader } from './MonthHeader';
 import { CalendarGrid } from './CalendarGrid';
-import { ThemeSwitcher } from './ThemeSwitcher';
 import { useCalendar } from '../hooks/useCalendar';
-import type { ThemeId } from '../types/theme';
-import { loadTheme, saveTheme, applyTheme } from '../types/theme';
 import './App.css';
 
 function scrollToToday() {
@@ -27,21 +24,8 @@ function scrollToToday() {
 
 export default function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { events, loading,  authState, isDemoMode} = useCalendar(currentDate);
+  const { events, loading, authState, isDemoMode } = useCalendar(currentDate);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // ── Theme ──────────────────────────────────────────────────────────
-  const [theme, setThemeState] = useState<ThemeId>(() => {
-    const t = loadTheme();
-    applyTheme(t);
-    return t;
-  });
-
-  const handleThemeChange = useCallback((id: ThemeId) => {
-    setThemeState(id);
-    saveTheme(id);
-    applyTheme(id);
-  }, []);
 
   // ── Month navigation ───────────────────────────────────────────────
   const days = useMemo(() => {
@@ -90,18 +74,12 @@ export default function App() {
         onNextMonth={handleNextMonth}
         onToday={handleToday}
         isDemoMode={isDemoMode}
-        theme={theme}
-        themeSwitcher={
-          <ThemeSwitcher current={theme} onChange={handleThemeChange} />
-        }
       />
       <CalendarGrid
         days={days}
         events={events}
         loading={loading}
-        theme={theme}
       />
-
 
       {loading && authState === 'authenticated' && (
         <div className="loading-overlay">

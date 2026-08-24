@@ -1,8 +1,6 @@
 /*
  * MonthHeader.css
  * Base styles + per-theme overrides.
- * Classic + Muted use JS-injected gradient backgrounds from MONTH_THEMES.
- * Sleek + Light override completely via .theme-sleek / .theme-light classes.
  */
 
 /* ─── Base ─── */
@@ -201,92 +199,3 @@
   color: #6B675A;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   THEME: MUTED
-   Desaturated, off-white header. Monthly bg still subtle but faded.
-   ═══════════════════════════════════════════════════════════ */
-.month-header.theme-muted {
-  /* The JS-injected gradient bg remains but we layer a wash over it */
-  filter: saturate(0.28) brightness(1.06);
-}
-
-.month-header.theme-muted .month-name {
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-shadow: none;
-}
-
-.month-header.theme-muted .nav-btn {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(0,0,0,0.12);
-  color: #6B6360;
-}
-
-.month-header.theme-muted .today-btn {
-  background: rgba(255, 255, 255, 0.8);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME: LIGHT
-   Light counterpart to sleek — white header, hairline divider,
-   Inter font, no decorations
-   ═══════════════════════════════════════════════════════════ */
-.month-header.theme-light {
-  background: #FFFFFF !important;
-  border-bottom: 1px solid #E2E8F0;
-  padding: 10px 16px 8px;
-}
-
-.month-header.theme-light::after { display: none; }
-
-.month-header.theme-light .nav-btn {
-  background: #F1F5F9;
-  border-color: #E2E8F0;
-  color: #64748B;
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
-  font-size: 11px;
-}
-
-.month-header.theme-light .nav-btn:active {
-  background: #E2E8F0;
-}
-
-.month-header.theme-light .month-name {
-  color: #0F172A !important;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 300;
-  font-size: 26px;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  text-shadow: none;
-}
-
-.month-header.theme-light .month-year {
-  color: #94A3B8 !important;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 2px;
-}
-
-.month-header.theme-light .today-btn {
-  background: transparent;
-  border-color: #CBD5E1 !important;
-  color: #64748B !important;
-  border-radius: 6px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 500;
-  letter-spacing: 1px;
-}
-
-.month-header.theme-light .today-btn:active {
-  background: #F1F5F9;
-  color: #334155 !important;
-}
-
-.month-header.theme-light .demo-badge {
-  background: #F1F5F9;
-  color: #64748B;
-}
