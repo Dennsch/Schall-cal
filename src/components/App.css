@@ -41,13 +41,13 @@ body {
   --loading-color: #F5A623;
 }
 
-/* ─── Theme: Sleek (dark slate minimalist) ─── */
+/* ─── Theme: Sleek (warm cream editorial serif) ─── */
 [data-theme="sleek"] {
-  --app-bg:        #0F172A;
-  --app-color:     #E2E8F0;
-  --app-font:      'Inter', system-ui, sans-serif;
-  --header-border: 1px solid #1E293B;
-  --loading-color: #38BDF8;
+  --app-bg:        #F7F4EC;
+  --app-color:     #262419;
+  --app-font:      Georgia, 'Times New Roman', serif;
+  --header-border: 1px solid #E7E2D4;
+  --loading-color: #5B87B0;
 }
 
 /* ─── Theme: Muted (soft desaturated pastels) ─── */
