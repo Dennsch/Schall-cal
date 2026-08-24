@@ -52,6 +52,13 @@ function PinIcon() {
 export function EventPopover({ event, memberName, onClose }: EventPopoverProps) {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Auto-close after 15 seconds — the calendar is a glanceable wall display,
+  // no need for anyone to remember to dismiss it
+  useEffect(() => {
+    const timer = setTimeout(onClose, 15_000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
   // Close on tap outside or Escape
   useEffect(() => {
     const handleOutside = (e: MouseEvent | TouchEvent) => {

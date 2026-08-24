@@ -1,6 +1,6 @@
-import dennisImg from '../images/dennis.png';
-import angelaImg from '../images/Angela.png';
-import taronImg from '../images/Taron.png';
+import dennisImg from '../images/Dennis-c.png';
+import angelaImg from '../images/Angela-c.png';
+import taronImg from '../images/Taron-c.png';
 import familyImg from '../images/family.png';
 
 export interface FamilyMember {
