@@ -6,6 +6,8 @@ import {
   endOfMonth,
   eachDayOfInterval,
 } from 'date-fns';
+import { Capacitor } from '@capacitor/core';
+import { KeepAwake } from '@capacitor-community/keep-awake';
 import { MonthHeader } from './MonthHeader';
 import { CalendarGrid } from './CalendarGrid';
 import { useCalendar } from '../hooks/useCalendar';
@@ -54,16 +56,36 @@ export default function App() {
     }
   }, [currentDate, loading]);
 
-  // ── Night dimming (10 PM – 6 AM) ──────────────────────────────────
+  // ── Night schedule (10 PM – 6 AM) ─────────────────────────────────
+  // Dims the UI and releases the wake lock so the tablet sleeps via its
+  // normal screen timeout. Re-acquires the lock during the day, and
+  // re-evaluates whenever the device wakes (visibilitychange).
   const [nightMode, setNightMode] = useState(false);
   useEffect(() => {
-    function checkNight() {
+    async function applyPowerState() {
       const hour = new Date().getHours();
-      setNightMode(hour >= 22 || hour < 6);
+      const night = hour >= 22 || hour < 6;
+      setNightMode(night);
+
+      if (!Capacitor.isNativePlatform()) return;
+      try {
+        if (night) {
+          await KeepAwake.allowSleep();
+        } else {
+          await KeepAwake.keepAwake();
+        }
+      } catch (err) {
+        console.warn('[Power] keep-awake toggle failed:', err);
+      }
     }
-    checkNight();
-    const timer = setInterval(checkNight, 60_000);
-    return () => clearInterval(timer);
+
+    applyPowerState();
+    const timer = setInterval(applyPowerState, 60_000);
+    document.addEventListener('visibilitychange', applyPowerState);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', applyPowerState);
+    };
   }, []);
 
   return (

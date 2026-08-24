@@ -4,9 +4,10 @@ import { KeepAwake } from '@capacitor-community/keep-awake';
 
 /**
  * Initialize native platform features for the SM-T350 tablet.
- * - Keeps the screen always on (it's a wall display)
+ * - Keeps the screen always on during the day (it's a wall display)
+ * - At night (10 PM – 6 AM) the wake lock is NOT acquired, so the tablet
+ *   sleeps via its normal screen timeout (see App.tsx night schedule)
  * - Hides the status bar for full-screen immersion
- * - Uses minimal battery by dimming at night (handled in App.tsx via CSS)
  */
 export async function initNativePlatform(): Promise<void> {
   if (!Capacitor.isNativePlatform()) {
@@ -14,12 +15,18 @@ export async function initNativePlatform(): Promise<void> {
     return;
   }
 
-  try {
-    // Keep the screen always on — this is a dedicated display device
-    await KeepAwake.keepAwake();
-    console.log('[Platform] Keep-awake enabled');
-  } catch (err) {
-    console.warn('[Platform] Keep-awake failed:', err);
+  const hour = new Date().getHours();
+  const isNight = hour >= 22 || hour < 6;
+
+  if (!isNight) {
+    try {
+      await KeepAwake.keepAwake();
+      console.log('[Platform] Keep-awake enabled');
+    } catch (err) {
+      console.warn('[Platform] Keep-awake failed:', err);
+    }
+  } else {
+    console.log('[Platform] Night hours — skipping keep-awake so tablet can sleep');
   }
 
   try {

@@ -38,7 +38,7 @@
   border-radius: 50%;
   width: 36px;
   height: 36px;
-  font-size: 13px;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -48,6 +48,10 @@
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
+}
+
+.chevron {
+  display: block;
 }
 
 .nav-btn:active { transform: scale(0.88); }
@@ -152,7 +156,6 @@
   border-radius: 50%;
   width: 34px;
   height: 34px;
-  font-size: 13px;
 }
 
 .month-header.theme-sleek .nav-btn:active {
