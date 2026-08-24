@@ -57,8 +57,8 @@
 }
 
 .member-avatar {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -258,7 +258,7 @@
 .calendar-grid.portrait .date-day-name  { font-size: 14px; }
 .calendar-grid.portrait .event-chip     { font-size: 12px; padding: 2px 8px; }
 .calendar-grid.portrait .member-name    { font-size: 15px; }
-.calendar-grid.portrait .member-avatar { width: 30px; height: 30px; }
+.calendar-grid.portrait .member-avatar { width: 36px; height: 36px; }
 
 /* portrait today indicator — arrow aligns to top sub-row centre */
 .calendar-grid.portrait .grid-row.today::before {
