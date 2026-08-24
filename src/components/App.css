@@ -1,12 +1,10 @@
 /*
- * App.css — Global layout + CSS custom properties for theming
+ * App.css — Global layout + theme custom properties
  *
- * Supports both landscape (1024×768) and portrait (768×1024) on SM-T350.
- * Theme is applied via [data-theme="classic|sleek|muted|light"] on <html>.
+ * The app uses the sleek editorial theme (set via data-theme="sleek" in index.html).
  */
 
 /* ─── Font imports ─── */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ─── Reset ─── */
@@ -32,40 +30,13 @@ body {
   -webkit-backface-visibility: hidden;
 }
 
-/* ─── Theme: Classic (warm wall-calendar) ─── */
-[data-theme="classic"] {
-  --app-bg:        #FDF6EC;
-  --app-color:     #3E2723;
-  --app-font:      'Nunito', 'Segoe UI', system-ui, sans-serif;
-  --header-border: 3px solid rgba(0,0,0,0.08);
-  --loading-color: #F5A623;
-}
-
-/* ─── Theme: Sleek (warm cream editorial serif) ─── */
+/* ─── Theme vars (sleek — warm cream editorial) ─── */
 [data-theme="sleek"] {
   --app-bg:        #F7F4EC;
   --app-color:     #262419;
   --app-font:      Inter, 'Times New Roman', serif;
   --header-border: 1px solid #E7E2D4;
   --loading-color: #5B87B0;
-}
-
-/* ─── Theme: Muted (soft desaturated pastels) ─── */
-[data-theme="muted"] {
-  --app-bg:        #F4F1EE;
-  --app-color:     #4A4543;
-  --app-font:      'Nunito', 'Segoe UI', system-ui, sans-serif;
-  --header-border: 2px solid #DDD8D4;
-  --loading-color: #8B9BAA;
-}
-
-/* ─── Theme: Light (minimalist light slate — light counterpart to sleek) ─── */
-[data-theme="light"] {
-  --app-bg:        #F8FAFC;
-  --app-color:     #0F172A;
-  --app-font:      'Inter', system-ui, sans-serif;
-  --header-border: 1px solid #E2E8F0;
-  --loading-color: #0284C7;
 }
 
 /* ─── App Container ─── */

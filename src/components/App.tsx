@@ -6,12 +6,11 @@ import {
   endOfMonth,
   eachDayOfInterval,
 } from 'date-fns';
+import { Capacitor } from '@capacitor/core';
+import { KeepAwake } from '@capacitor-community/keep-awake';
 import { MonthHeader } from './MonthHeader';
 import { CalendarGrid } from './CalendarGrid';
-import { ThemeSwitcher } from './ThemeSwitcher';
 import { useCalendar } from '../hooks/useCalendar';
-import type { ThemeId } from '../types/theme';
-import { loadTheme, saveTheme, applyTheme } from '../types/theme';
 import './App.css';
 
 function scrollToToday() {
@@ -27,21 +26,8 @@ function scrollToToday() {
 
 export default function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { events, loading,  authState, isDemoMode} = useCalendar(currentDate);
+  const { events, loading, authState, isDemoMode } = useCalendar(currentDate);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // ── Theme ──────────────────────────────────────────────────────────
-  const [theme, setThemeState] = useState<ThemeId>(() => {
-    const t = loadTheme();
-    applyTheme(t);
-    return t;
-  });
-
-  const handleThemeChange = useCallback((id: ThemeId) => {
-    setThemeState(id);
-    saveTheme(id);
-    applyTheme(id);
-  }, []);
 
   // ── Month navigation ───────────────────────────────────────────────
   const days = useMemo(() => {
@@ -70,16 +56,36 @@ export default function App() {
     }
   }, [currentDate, loading]);
 
-  // ── Night dimming (10 PM – 6 AM) ──────────────────────────────────
+  // ── Night schedule (10 PM – 6 AM) ─────────────────────────────────
+  // Dims the UI and releases the wake lock so the tablet sleeps via its
+  // normal screen timeout. Re-acquires the lock during the day, and
+  // re-evaluates whenever the device wakes (visibilitychange).
   const [nightMode, setNightMode] = useState(false);
   useEffect(() => {
-    function checkNight() {
+    async function applyPowerState() {
       const hour = new Date().getHours();
-      setNightMode(hour >= 22 || hour < 6);
+      const night = hour >= 22 || hour < 6;
+      setNightMode(night);
+
+      if (!Capacitor.isNativePlatform()) return;
+      try {
+        if (night) {
+          await KeepAwake.allowSleep();
+        } else {
+          await KeepAwake.keepAwake();
+        }
+      } catch (err) {
+        console.warn('[Power] keep-awake toggle failed:', err);
+      }
     }
-    checkNight();
-    const timer = setInterval(checkNight, 60_000);
-    return () => clearInterval(timer);
+
+    applyPowerState();
+    const timer = setInterval(applyPowerState, 60_000);
+    document.addEventListener('visibilitychange', applyPowerState);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', applyPowerState);
+    };
   }, []);
 
   return (
@@ -90,18 +96,12 @@ export default function App() {
         onNextMonth={handleNextMonth}
         onToday={handleToday}
         isDemoMode={isDemoMode}
-        theme={theme}
-        themeSwitcher={
-          <ThemeSwitcher current={theme} onChange={handleThemeChange} />
-        }
       />
       <CalendarGrid
         days={days}
         events={events}
         loading={loading}
-        theme={theme}
       />
-
 
       {loading && authState === 'authenticated' && (
         <div className="loading-overlay">
