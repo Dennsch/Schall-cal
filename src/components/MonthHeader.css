@@ -163,7 +163,7 @@
 
 .month-header.theme-sleek .month-name {
   color: #2B2922 !important;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Inter, 'Times New Roman', serif;
   font-weight: 400;
   font-size: 30px;
   letter-spacing: 3px;
@@ -173,7 +173,7 @@
 
 .month-header.theme-sleek .month-year {
   color: #2B2922 !important;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Inter, 'Times New Roman', serif;
   font-weight: 400;
   font-size: 26px;
   letter-spacing: 3px;
@@ -184,7 +184,7 @@
   border-color: #D8D2C2 !important;
   color: #4A473C !important;
   border-radius: 16px;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Inter, 'Times New Roman', serif;
   font-weight: 400;
   font-size: 12px;
   letter-spacing: 2px;

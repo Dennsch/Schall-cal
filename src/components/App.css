@@ -45,7 +45,7 @@ body {
 [data-theme="sleek"] {
   --app-bg:        #F7F4EC;
   --app-color:     #262419;
-  --app-font:      Georgia, 'Times New Roman', serif;
+  --app-font:      Inter, 'Times New Roman', serif;
   --header-border: 1px solid #E7E2D4;
   --loading-color: #5B87B0;
 }
