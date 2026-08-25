@@ -8,6 +8,7 @@ import {
 } from 'date-fns';
 import { Capacitor } from '@capacitor/core';
 import { KeepAwake } from '@capacitor-community/keep-awake';
+import { App as CapApp } from '@capacitor/app';
 import { MonthHeader } from './MonthHeader';
 import { CalendarGrid } from './CalendarGrid';
 import { useCalendar } from '../hooks/useCalendar';
@@ -58,13 +59,26 @@ export default function App() {
 
   // ── Night schedule (10 PM – 6 AM) ─────────────────────────────────
   // Dims the UI and releases the wake lock so the tablet sleeps via its
-  // normal screen timeout. Re-acquires the lock during the day, and
-  // re-evaluates whenever the device wakes (visibilitychange).
+  // normal screen timeout. FLAG_KEEP_SCREEN_ON dies with the Activity,
+  // so after an overnight sleep / app restart it must be re-acquired on
+  // every wake path (visibilitychange, focus, native resume) — and the
+  // result is verified, with retries, because the bridge can reject
+  // plugin calls right after the activity is recreated.
   const [nightMode, setNightMode] = useState(false);
   useEffect(() => {
-    async function applyPowerState() {
-      const hour = new Date().getHours();
-      const night = hour >= 22 || hour < 6;
+    let cancelled = false;
+    let consecutiveFails = 0;
+    const pending = new Set<ReturnType<typeof setTimeout>>();
+
+    async function acquire() {
+      await KeepAwake.keepAwake();
+      const { isKeptAwake } = await KeepAwake.isKeptAwake();
+      if (!isKeptAwake) throw new Error('FLAG_KEEP_SCREEN_ON not set after keepAwake()');
+    }
+
+    async function applyPowerState(reason: string) {
+      const now = new Date();
+      const night = now.getHours() >= 22 || now.getHours() < 6;
       setNightMode(night);
 
       if (!Capacitor.isNativePlatform()) return;
@@ -72,19 +86,53 @@ export default function App() {
         if (night) {
           await KeepAwake.allowSleep();
         } else {
-          await KeepAwake.keepAwake();
+          await acquire();
         }
+        consecutiveFails = 0;
+        console.log(`[Power] ${now.toLocaleTimeString()} ${reason}: ${night ? 'sleep allowed' : 'awake'}`);
       } catch (err) {
-        console.warn('[Power] keep-awake toggle failed:', err);
+        consecutiveFails += 1;
+        console.warn(
+          `[Power] ${now.toLocaleTimeString()} ${reason} FAILED (${consecutiveFails}):`,
+          err,
+        );
+        if (!cancelled && consecutiveFails <= 5) {
+          const t = setTimeout(() => {
+            if (!cancelled) void applyPowerState(`${reason}/retry`);
+          }, 2_000);
+          pending.add(t);
+        }
       }
     }
 
-    applyPowerState();
-    const timer = setInterval(applyPowerState, 60_000);
-    document.addEventListener('visibilitychange', applyPowerState);
+    void applyPowerState('mount');
+    const timer = setInterval(() => void applyPowerState('tick'), 60_000);
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void applyPowerState('visibilitychange');
+    };
+    const onFocus = () => void applyPowerState('focus');
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onFocus);
+
+    let removeResume = () => {};
+    if (Capacitor.isNativePlatform()) {
+      CapApp.addListener('resume', () => void applyPowerState('resume')).then((handle) => {
+        if (cancelled) {
+          void handle.remove();
+        } else {
+          removeResume = () => void handle.remove();
+        }
+      });
+    }
+
     return () => {
+      cancelled = true;
       clearInterval(timer);
-      document.removeEventListener('visibilitychange', applyPowerState);
+      pending.forEach(clearTimeout);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onFocus);
+      removeResume();
     };
   }, []);
 
