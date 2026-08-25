@@ -56,7 +56,7 @@ export default function App() {
     }
   }, [currentDate, loading]);
 
-  // ── Night schedule (10 PM – 6 AM) ─────────────────────────────────
+  // ── Night schedule (10 PM – 4 AM) ─────────────────────────────────
   // Dims the UI and releases the wake lock so the tablet sleeps via its
   // normal screen timeout. Re-acquires the lock during the day, and
   // re-evaluates whenever the device wakes (visibilitychange).
@@ -64,7 +64,7 @@ export default function App() {
   useEffect(() => {
     async function applyPowerState() {
       const hour = new Date().getHours();
-      const night = hour >= 22 || hour < 6;
+      const night = hour >= 22 || hour < 4;
       setNightMode(night);
 
       if (!Capacitor.isNativePlatform()) return;
