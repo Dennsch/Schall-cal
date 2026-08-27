@@ -31,12 +31,12 @@ export interface DayEvents {
 
 export const FAMILY_MEMBERS: FamilyMember[] = [
   {
-    id: 'member1',
-    name: 'Dennis',
-    color: '#4A90D9',
-    emoji: '👨',
-    image: dennisImg,
-    calendarId: '', // Set in .env
+    id: 'member3',
+    name: 'Taron',
+    color: '#5EC269',
+    emoji: '🧒',
+    image: taronImg,
+    calendarId: '',
   },
   {
     id: 'member2',
@@ -47,12 +47,12 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
     calendarId: '',
   },
   {
-    id: 'member3',
-    name: 'Taron',
-    color: '#5EC269',
-    emoji: '🧒',
-    image: taronImg,
-    calendarId: '',
+    id: 'member1',
+    name: 'Dennis',
+    color: '#4A90D9',
+    emoji: '👨',
+    image: dennisImg,
+    calendarId: '', // Set in .env
   },
   {
     id: 'family',
