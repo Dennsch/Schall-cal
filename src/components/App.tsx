@@ -26,7 +26,12 @@ function scrollToToday() {
 
 export default function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { events, loading, authState, isDemoMode } = useCalendar(currentDate);
+
+  // ── Auto-refresh ───────────────────────────────────────────────────
+  // Every periodic data refresh resets the view back to today.
+  const handleAutoRefresh = useCallback(() => setCurrentDate(new Date()), []);
+
+  const { events, loading, authState, isDemoMode } = useCalendar(currentDate, handleAutoRefresh);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // ── Month navigation ───────────────────────────────────────────────

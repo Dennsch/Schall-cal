@@ -21,6 +21,7 @@ interface UseCalendarReturn {
 
 export function useCalendar(
   currentDate: Date,
+  onAutoRefresh: () => void,
 ): UseCalendarReturn {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +54,7 @@ export function useCalendar(
 
   useEffect(() => {
     refreshTimerRef.current = window.setInterval(() => {
-      refreshEvents(currentDate);
+      onAutoRefresh();
     }, 5 * 60 * 1000);
 
     return () => {
@@ -61,7 +62,7 @@ export function useCalendar(
         clearInterval(refreshTimerRef.current);
       }
     };
-  }, [currentDate, refreshEvents]);
+  }, [onAutoRefresh]);
 
   const signIn = useCallback(() => {
     // No sign-in required.
