@@ -31,19 +31,22 @@ export default async function handler(
   }
 
   try {
-    const date = req.query.date
-      ? new Date(String(req.query.date))
-      : new Date();
+    const now = new Date();
+    const year = Number(req.query.year) || now.getFullYear();
+    const month = Number(req.query.month) || now.getMonth();
 
     const timeMin = new Date(
-      date.getFullYear(),
-      date.getMonth(),
+      year,
+      month,
       1,
+      0,
+      0,
+      0,
     ).toISOString();
 
     const timeMax = new Date(
-      date.getFullYear(),
-      date.getMonth() + 1,
+      year,
+      month + 1,
       0,
       23,
       59,
