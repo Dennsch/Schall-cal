@@ -29,12 +29,17 @@ export function useCalendar(
   const [isDemoMode, setIsDemoMode] = useState(false);
 
   const refreshTimerRef = useRef<number | null>(null);
+  const requestIdRef = useRef(0);
 
   const refreshEvents = useCallback(async (date: Date) => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
 
     try {
       const fetched = await fetchAllEvents(date);
+
+      // Ignore stale responses from out-of-order / aborted requests.
+      if (requestId !== requestIdRef.current) return;
 
       setEvents(fetched);
       setError(null);
@@ -42,9 +47,13 @@ export function useCalendar(
     } catch (err) {
       console.error('Error fetching events:', err);
 
+      if (requestId !== requestIdRef.current) return;
+
       setError('Failed to load calendar events');
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
